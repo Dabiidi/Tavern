@@ -62,6 +62,12 @@ npm run build:web
 
 Deploy the contents of `standalone-site/dist/` to a static host. This produces a local deployment-ready build; it does not publish to a hosting account.
 
+### Vercel
+
+Import the project with **Root Directory** set to the folder containing this `package.json` and `vercel.json` (the repository root when this project is the whole repository). Use Node.js **24.x**. The checked-in `vercel.json` selects the **Other** framework preset, runs `npm run build`, and publishes **`dist/web`**. The install command includes development dependencies needed to compile TypeScript and skips the optional Electron binary download.
+
+Redeploy after adding this configuration. If deploying from the CLI, run `vercel` from the project root, or run `vercel build` followed by `vercel deploy --prebuilt`. The latter requires Vercel's build step to generate `.vercel/output`; the ordinary `npm run build` produces `dist/web` for source deployments. Do not set the output directory to the project root, `dist`, or `.vercel/output`: those are not the browser game's static asset directory.
+
 The sprites and scenery use Canvas drawing code written in TypeScript. There are no external fonts, accounts, telemetry, or runtime network dependencies.
 
 ## Journey stages

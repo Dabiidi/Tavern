@@ -1,0 +1,15 @@
+.vscode/**
+test/**
+scripts/**
+.git/**
+preview.jpg
+standalone-site/**
+artifacts/**
+desktop/**
+src/**
+node_modules/**
+*.tsbuildinfo
+tsconfig*.json
+package-lock.json
+preview*.jpg
+dist/test/**
