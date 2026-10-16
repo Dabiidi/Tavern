@@ -1,4 +1,8 @@
 interface Elements {
+  'lore-panel': HTMLDialogElement;
+  'equipment-panel': HTMLDialogElement;
+  'equipment-open': HTMLButtonElement;
+  'equipment-close': HTMLButtonElement;
   'popup': HTMLElementTagNameMap['button'];
   'compact': HTMLElementTagNameMap['button'];
   'install': HTMLElementTagNameMap['button'];

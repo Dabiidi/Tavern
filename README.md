@@ -70,9 +70,9 @@ Redeploy after adding this configuration. If deploying from the CLI, run `vercel
 
 The sprites and scenery use Canvas drawing code written in TypeScript. There are no external fonts, accounts, telemetry, or runtime network dependencies.
 
-## Journey stages
+## Connected world
 
-Complete the three favors in a region to automatically travel to the next stage after a short transition. Pause freezes travel; Travel Now skips the countdown. Our Journey lets you revisit unlocked regions. Coins, materials, character appearance, and completed favors persist across travel and saves. Sprite-clearing goals count separately in each region.
+The field is one continuous 6,144 × 4,608 world divided into four connected biomes. Walk along the trails to choose where to explore; there are no region tabs. A small corner minimap shows your position, villagers, treasure, rest camps, and locked paths. Paths open after 6, 15, and 30 total monster clears, or by completing the previous region’s favors. Crossing an unlocked border keeps movement and health continuous. Coins, materials, character appearance, and completed favors persist across areas and saves.
 
 | Stage | Setting | Buildings and scenery | New tasks |
 | --- | --- | --- | --- |
@@ -106,3 +106,33 @@ Edit the TypeScript files rather than generated JavaScript:
 
 JavaScript exists only in build-output folders: `dist/`, `desktop/dist/`, and `standalone-site/dist/`. The `media/` folder contains only HTML, CSS, the manifest, and image assets. The browser and VS Code still execute JavaScript; TypeScript is the maintained source. VS Code hides generated `dist/` folders from the Explorer so the editable TypeScript files are easy to find. Existing game-save keys and format are preserved.
 # Tavern
+
+## Adventurer progression and equipment
+
+Press **I** or the **◇ Equipment** toolbar button to open your gear. The world freezes while the dialog is open; close it with **I**, Escape, or ×. Gathering grants 3 XP, clearing a sprite grants 12 XP, and completing a favor grants 40 XP. Every 100 XP advances a level, up to level 10.
+
+Upgrade your yantok arnis for quicker swings (double damage at tier 3), abaca sandals for 8% more movement speed per tier, and a fictional agimat pendant for an extra coin per sprite drop per tier. Purchases immediately equip and save, using peso coins and agimat beads. Upgrade tiers require levels 1, 2, and 4. Existing saves retain their items and receive starting XP from completed favors and cleared sprites.
+
+Equipped gear is drawn on the world character, portrait, and enlarged equipment preview: tier-specific yantok wraps, woven sandals, and colored agimat pendants. Use the equipment selectors to switch between collected tiers for free. The first sprite clear drops equipment, followed by every third clear (1, 4, 7, …); drops cycle through arnis, sandals, and agimat. Regions drop tiers 1, 2, 2, and 3 respectively. Better finds equip automatically, while duplicate or lower-tier finds grant two bonus beads. Owned and equipped tiers persist across saves and travel.
+
+## The Lantern Road: folklore journey
+
+Press **L** or **☾ Journal** for an original four-chapter mystery. Each completed favor reveals another fragment; approaching an eastern monster records its encounter notes once. Completed older saves recover their finished chapters automatically. The journal freezes gameplay while open.
+
+The four stages feature kapre embers, tikbalang shadows, manananggal shades, and moon-serpent echoes inspired by Bakunawa. Each has a distinct animated silhouette and movement rhythm, with dusk lighting and drifting mist. These are fictional shadow encounters; the architecture and folklore are not presented as one community’s belief system. In particular, Bakunawa is identified as a Visayan tradition carried into the fictional lakeside chapter by a traveler.
+
+Folklore background: [The Aswang Project’s Creatures of Philippine Mythology](https://www.aswangproject.com/creatures-of-philippine-mythology/). Story, lantern puzzle, shadow enemies, and combat rules are original game fiction.
+
+## Tavern, exploration, and combat
+
+New adventurers start at **Bahay Pahinga**. Talk to Tala, Isko, or Amihan with **E**, or select their button, then use the door or **Head out**. Isko has quicker swings; Amihan moves 12% faster. Use **H** or **⌂** to return to the tavern. Rest at the bed or a field camp; defeat recovers you at the tavern with your belongings.
+
+- **Hold Space:** repeat attacks with your equipped weapon.
+- **Hold R:** fire the tirador with pebbles, light aiming assistance, and a cooldown.
+- **1 / 2:** select your strongest collected melee / ranged weapon.
+- **I:** inspect, equip, and upgrade gear.
+- **Click ground:** route around nearby obstacles; movement keys take over immediately.
+
+Each biome has 60 supply spots, 24 monster homes, seven one-time chests, and four rest camps. Enemies respawn after 28 seconds for weapon farming. Arnis, bolo, spear, and tirador variants have different damage, reach, and rarity. Better damage drops equip automatically; collected weapons remain available in Equipment.
+
+Forests use deterministic spacing to keep trunks apart and main roads clear. Canopies fade over your character. Save migration preserves progress and moves old local region coordinates into the shared world once. A saved position covered by regenerated scenery is placed on nearby clear ground. The optional journal retains the folklore story.

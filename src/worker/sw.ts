@@ -1,6 +1,6 @@
 export {};
 declare const self: ServiceWorkerGlobalScope;
-const CACHE='baryo-typescript-v4-3';
+const CACHE='baryo-minimap-v4-12';
 const FILES=['./','./index.html','./style.css','./game.js','./icon.svg','./icon-192.png','./icon-512.png','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('mosslight-')||k.startsWith('baryo-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
