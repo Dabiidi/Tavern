@@ -277,6 +277,9 @@
     if (peer.from.area !== peer.to.area || Math.hypot(peer.to.x - peer.from.x, peer.to.y - peer.from.y) > 350) return peer.to;
     return { ...peer.to, x: peer.from.x + (peer.to.x - peer.from.x) * t, y: peer.from.y + (peer.to.y - peer.from.y) * t, walkTime: peer.to.walkTime + (peer.to.walking ? Math.min(1, (now - peer.at) / 1e3) : 0) };
   }
+  function isMultiplayerActive() {
+    return desired;
+  }
   function remoteGuests(area) {
     if (!token || performance.now() - lastReply > 6e3) return [];
     return [...tracked.values()].map((p) => interpolate(p, performance.now())).filter((p) => p.area === area);
@@ -347,10 +350,7 @@
     element("online-open").addEventListener("click", () => panel.showModal());
     element("online-close").addEventListener("click", () => panel.close());
     element("online-leave").addEventListener("click", leave);
-    element("online-new-room").addEventListener("click", () => {
-      roomInput.value = "baryo-" + crypto.randomUUID().slice(0, 8);
-    });
-    element("online-join").addEventListener("click", async () => {
+    const joinWorld = async () => {
       const nextRoom = roomCode(roomInput.value.trim().toLowerCase());
       if (!nextRoom) {
         status("Use 3\u201324 letters, numbers or dashes");
@@ -374,6 +374,11 @@
       } finally {
         button.disabled = false;
       }
+    };
+    element("online-join").addEventListener("click", joinWorld);
+    element("online-new-room").addEventListener("click", async () => {
+      roomInput.value = "baryo-" + crypto.randomUUID().slice(0, 8);
+      await joinWorld();
     });
     element("online-copy").addEventListener("click", async () => {
       const url = new URL(location.href);
@@ -1466,7 +1471,7 @@
   if (!vscode && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("./sw.js").catch(() => {
   });
   window.addEventListener("storage", (event) => {
-    if (event.key === key && event.newValue && !state.player.walking) {
+    if (event.key === key && event.newValue && !state.player.walking && !isMultiplayerActive()) {
       try {
         state = restore(JSON.parse(event.newValue));
         lastUI = "";

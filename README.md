@@ -144,3 +144,11 @@ The character button opens an animated fitting room in the tavern. Choose headwe
 The browser composes layered pixel sprites into cached eight-frame sheets for each direction and action. Clothing, headwear, bag, pendant, sandals, and weapons animate together. The scene adds moving leaves, richer tree canopies, warmer lighting, footstep dust, and wandering chickens.
 
 Linen and abaca armor are available initially. Leather and moonweave can be crafted in Equipment or found as monster drops. Armor sets maximum hearts to 5, 6, 7, or 8; rest or enjoy buko to refill them. Crafting costs and level requirements appear beside each piece. Older saves gain starter appearance options while retaining their progress and weapons.
+
+## Online guest worlds
+
+The Vercel frontend connects to the hosted guest server at https://mosslight-idle-hero.stash-0852.chatgpt.site through the `baryo-guest-origin` meta tag in `media/index.html`. No secret keys are needed in Vercel. Deploy normally with `npm run build` and output directory `dist/web`.
+
+Open the guest button (♟), choose **Create world** or enter a world code and **Join world**. Share **Copy invite** with friends. Up to 24 guests in the same code can see each other in the outdoor world and tavern, including their outfits, and use 💬 to chat. Each player keeps their own quest, combat, inventory, and progression save. This is shared presence and chat, not synchronized cooperative combat.
+
+Local preview uses the local guest server. The online service uses D1 for presence and recent chat, expiring guests after 20 seconds without a heartbeat and returning the last 30 messages from five minutes. If you add a production domain, add its exact origin to `GUEST_ORIGINS` and republish the guest server.

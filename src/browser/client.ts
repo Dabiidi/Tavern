@@ -1,4 +1,4 @@
-import { initMultiplayer } from './multiplayer';
+import { initMultiplayer, isMultiplayerActive } from './multiplayer';
 import { findPath } from '../shared/navigation';
 import * as core from '../shared/core';
 import { isRecord } from '../shared/types';
@@ -79,7 +79,7 @@ export function setTarget(x:number,y:number){route=findPath(state.player,{x,y},(
   if(window.mosslightDesktop){document.body.classList.add('desktop');$('desktop-controls').hidden=false;$('popup').hidden=true;for(const [id,command] of [['pin-window','pin'],['minimize-window','minimize'],['close-window','close']] as const)$(id).addEventListener('click',()=>window.mosslightDesktop?.control(command));}
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;$('install').hidden=false;});$('install').addEventListener('click',async()=>{if(installEvent){await installEvent.prompt();installEvent=null;$('install').hidden=true;}});
   if(!vscode&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  window.addEventListener('storage',event=>{if(event.key===key&&event.newValue&&!state.player.walking){try{state=core.restore(JSON.parse(event.newValue));lastUI='';}catch(_){}}});
+  window.addEventListener('storage',event=>{if(event.key===key&&event.newValue&&!state.player.walking&&!isMultiplayerActive()){try{state=core.restore(JSON.parse(event.newValue));lastUI='';}catch(_){}}});
   function update(){
     const s=state,p=s.player,n=core.nearest(s),q=core.currentQuest(s);
     const stage=core.stageInfo(s);
