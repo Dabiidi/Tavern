@@ -3,3 +3,5 @@ artifacts/
 *.vsix
 dist/
 .vercel/
+
+.sites-starter/

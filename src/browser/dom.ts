@@ -52,7 +52,7 @@ interface Elements {
   'buko': HTMLElementTagNameMap['b'];
   'beads': HTMLElementTagNameMap['b'];
   'snack': HTMLElementTagNameMap['button'];
-  'customize-panel': HTMLElementTagNameMap['section'];
+  'customize-panel': HTMLDialogElement;
   'customize-close': HTMLElementTagNameMap['button'];
   'character-choices': HTMLElementTagNameMap['div'];
   'name-input': HTMLElementTagNameMap['input'];

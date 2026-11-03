@@ -1,11 +1,12 @@
+import type { ArmorId, HairStyle, SkinTone, HairColor } from './appearance';
 export type Direction = 'up' | 'down' | 'left' | 'right';
 export type CharacterId = 'tala' | 'isko' | 'amihan';
 export type Outfit = 'terracotta' | 'ocean' | 'ube' | 'mango';
-export type Hat = 'salakot' | 'bandana' | 'none';
+export type Hat = 'salakot' | 'bandana' | 'rattan' | 'none';
 export type Resource = 'mango' | 'flowers' | 'buko' | 'clay' | 'rice' | 'bamboo' | 'wood' | 'cloth';
 export type QuestItem = Resource | 'cleared';
 export type NpcId = 'lola' | 'nena' | 'benji';
-export type Action = 'interact' | 'swing' | 'pause' | 'compact' | 'dash' | 'snack' | 'customize' | 'travel' | 'upgrade' | 'equip' | 'home' | 'depart' | 'weapon' | 'shoot';
+export type Action = 'interact' | 'swing' | 'pause' | 'compact' | 'dash' | 'snack' | 'customize' | 'travel' | 'upgrade' | 'equip' | 'home' | 'depart' | 'weapon' | 'shoot' | 'craftArmor';
 export type EventType = 'notice' | 'gather' | 'hit' | 'loot' | 'swing' | 'hurt' | 'quest' | 'arrival' | 'departure' | 'equipment' | 'lore';
 export interface Point { x: number; y: number }
 export interface Character { name: string; description: string; shirt: string; skin: string }
@@ -21,7 +22,12 @@ export interface Player extends Point { shot:number; shotCooldown:number; dir: D
 export interface Spirit extends Point { hp: number; dead: number; phase: number; flash: number }
 export interface GameEvent extends Point { id: number; text: string; type: EventType }
 export type GearId = 'arnis' | 'sandals' | 'agimat';
+export interface CharacterProfile {
+  name:string;outfit:Outfit;hat:Hat;hair:HairStyle;hairColor:HairColor;skin:SkinTone;armor:ArmorId;armors:ArmorId[];weapon:string;weapons:string[];gear:Record<GearId,number>;gearOwned:Record<GearId,number>;xp:number;hp:number;stamina:number;
+}
 export interface GameState extends Record<Resource, number> {
+  armor:ArmorId; armors:ArmorId[]; hair:HairStyle; skin:SkinTone; hairColor:HairColor;
+  profiles:Record<CharacterId,CharacterProfile>;
   worldVersion: 1; weapon: string; weapons: string[];
   area: 'tavern' | 'field'; chests: number[];
   version: 4; stage: number; stageProgress: number[]; clearStart: number[]; unlocked: number; arrival: number;

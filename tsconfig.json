@@ -20,6 +20,7 @@
     "src/shared/**/*.ts",
     "src/browser/**/*.ts",
     "src/desktop/**/*.ts",
+    "src/server/**/*.ts",
     "src/extension.ts",
     "scripts/**/*.mts",
     "test/**/*.ts"

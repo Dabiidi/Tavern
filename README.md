@@ -136,3 +136,11 @@ New adventurers start at **Bahay Pahinga**. Talk to Tala, Isko, or Amihan with *
 Each biome has 60 supply spots, 24 monster homes, seven one-time chests, and four rest camps. Enemies respawn after 28 seconds for weapon farming. Arnis, bolo, spear, and tirador variants have different damage, reach, and rarity. Better damage drops equip automatically; collected weapons remain available in Equipment.
 
 Forests use deterministic spacing to keep trunks apart and main roads clear. Canopies fade over your character. Save migration preserves progress and moves old local region coordinates into the shared world once. A saved position covered by regenerated scenery is placed on nearby clear ground. The optional journal retains the folklore story.
+
+## Layered animated characters
+
+The character button opens an animated fitting room in the tavern. Choose headwear, hair style and color, skin tone, shirt color, body armor, and an owned weapon. Rotate the preview or switch between Idle, Walk, Arnis, Tirador, and Dash. Looks save immediately; the name uses Save name.
+
+The browser composes layered pixel sprites into cached eight-frame sheets for each direction and action. Clothing, headwear, bag, pendant, sandals, and weapons animate together. The scene adds moving leaves, richer tree canopies, warmer lighting, footstep dust, and wandering chickens.
+
+Linen and abaca armor are available initially. Leather and moonweave can be crafted in Equipment or found as monster drops. Armor sets maximum hearts to 5, 6, 7, or 8; rest or enjoy buko to refill them. Crafting costs and level requirements appear beside each piece. Older saves gain starter appearance options while retaining their progress and weapons.
