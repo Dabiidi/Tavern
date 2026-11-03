@@ -1,17 +1,35 @@
 // Generated from TypeScript. Run npm run build to regenerate.
 "use strict";
 (() => {
-  // src/shared/types.ts
-  function isRecord(value) {
-    return typeof value === "object" && value !== null;
-  }
-  function isKey(object, key2) {
-    return typeof key2 === "string" && Object.prototype.hasOwnProperty.call(object, key2);
-  }
+  // src/shared/chat.ts
+  var SpeechBubbles = class {
+    bubbles = /* @__PURE__ */ new Map();
+    seen = /* @__PURE__ */ new Set();
+    say(guestId2, text, now) {
+      this.bubbles.set(guestId2, { text, until: now + 5500 });
+    }
+    receive(messages, now, serverNow) {
+      for (const m of messages) {
+        if (this.seen.has(m.id)) continue;
+        this.seen.add(m.id);
+        if (serverNow - m.createdAt >= 0 && serverNow - m.createdAt < 5500) this.say(m.guestId, m.text, now);
+      }
+      if (this.seen.size > 256) this.seen = new Set([...this.seen].slice(-128));
+      for (const [id, b] of this.bubbles) if (b.until <= now) this.bubbles.delete(id);
+    }
+    get(id, now) {
+      const b = this.bubbles.get(id);
+      return b && b.until > now ? b.text : "";
+    }
+    clear() {
+      this.bubbles.clear();
+      this.seen.clear();
+    }
+  };
 
   // src/shared/world.ts
-  var REGION = { width: 3072, height: 2304 };
-  var WORLD = { width: 6144, height: 4608 };
+  var REGION = { width: 1920, height: 1440 };
+  var WORLD = { width: 3840, height: 2880 };
   function regionOrigin(stage) {
     return { x: stage % 2 * REGION.width, y: Math.floor(stage / 2) * REGION.height };
   }
@@ -22,8 +40,13 @@
     const o = regionOrigin(stage);
     return { ...p, x: p.x + o.x, y: p.y + o.y };
   }
+  var islandNames = ["Luzon", "Visayas", "Luzon", "Mindanao"];
+  var compactPoint = (p) => ({ ...p, x: p.x <= 960 ? p.x : 960 + (p.x - 960) * 0.45, y: p.y <= 960 ? p.y : 960 + (p.y - 960) * 0.32 });
+  var TOWN = { x: 540, y: 670, width: 440, height: 245 };
+  var inTown = (p) => p.x >= 520 && p.x <= 1e3 && p.y >= 540 && p.y <= 935;
+  var townBuildings = [{ x: 615, y: 600, w: 100, h: 80, type: "bato" }, { x: 855, y: 600, w: 110, h: 80, type: "store" }];
   var regionLocks = [0, 6, 15, 30];
-  var passages = [{ a: 0, b: 1, x: 3072, y: 735 }, { a: 0, b: 2, x: 455, y: 2304 }, { a: 1, b: 3, x: 3527, y: 2304 }, { a: 2, b: 3, x: 3072, y: 3039 }];
+  var passages = [{ a: 0, b: 1, x: 1920, y: 735 }, { a: 0, b: 2, x: 455, y: 1440 }, { a: 1, b: 3, x: 2375, y: 1440 }, { a: 2, b: 3, x: 1920, y: 2175 }];
   var TAVERN = { width: 768, height: 512, spawn: { x: 384, y: 365 }, door: { x: 384, y: 454 }, outside: { x: 392, y: 732 }, entrance: { x: 392, y: 710 } };
   var companions = [
     { id: "tala", x: 240, y: 240, role: "Wayfarer" },
@@ -31,10 +54,10 @@
     { id: "amihan", x: 528, y: 240, role: "Scout \xB7 faster steps" }
   ];
   var tavernFurniture = [{ x: 94, y: 116, w: 580, h: 48 }, { x: 103, y: 296, w: 100, h: 48 }, { x: 560, y: 296, w: 100, h: 48 }, { x: 620, y: 188, w: 74, h: 48 }];
-  var chests = [{ x: 1120, y: 250 }, { x: 1700, y: 970 }, { x: 730, y: 1010 }, { x: 2480, y: 870 }, { x: 2120, y: 1940 }, { x: 540, y: 1950 }, { x: 2820, y: 1680 }];
-  var camps = [{ x: 1100, y: 800 }, { x: 1630, y: 250 }, { x: 2400, y: 1200 }, { x: 850, y: 1790 }];
-  var wildNodes = [{ x: 1060, y: 285 }, { x: 1560, y: 190 }, { x: 1780, y: 380 }, { x: 740, y: 840 }, { x: 1110, y: 930 }, { x: 1500, y: 810 }, { x: 1720, y: 1050 }, { x: 240, y: 1020 }, { x: 970, y: 670 }, ...Array.from({ length: 42 }, (_, i) => ({ x: 600 + i * 463 % 2310, y: 650 + i * 197 % 1500 }))];
-  var wildSpiritHomes = [{ x: 1160, y: 330 }, { x: 1550, y: 340 }, { x: 1780, y: 290 }, { x: 940, y: 870 }, { x: 1510, y: 930 }, { x: 1720, y: 890 }, ...Array.from({ length: 15 }, (_, i) => ({ x: 1050 + i * 337 % 1810, y: 680 + i * 271 % 1440 }))];
+  var chests = [{ x: 1120, y: 250 }, { x: 1700, y: 970 }, { x: 730, y: 1010 }, { x: 2480, y: 870 }, { x: 2120, y: 1940 }, { x: 540, y: 1950 }, { x: 2820, y: 1680 }].map(compactPoint);
+  var camps = [{ x: 1100, y: 800 }, { x: 1630, y: 250 }, { x: 2400, y: 1200 }, { x: 850, y: 1790 }].map(compactPoint);
+  var wildNodes = [{ x: 1060, y: 285 }, { x: 1560, y: 190 }, { x: 1780, y: 380 }, { x: 740, y: 840 }, { x: 1110, y: 930 }, { x: 1500, y: 810 }, { x: 1720, y: 1050 }, { x: 240, y: 1020 }, { x: 970, y: 670 }, ...Array.from({ length: 42 }, (_, i) => ({ x: 600 + i * 463 % 2310, y: 650 + i * 197 % 1500 }))].map(compactPoint);
+  var wildSpiritHomes = [{ x: 1160, y: 330 }, { x: 1550, y: 340 }, { x: 1780, y: 290 }, { x: 1150, y: 870 }, { x: 1510, y: 930 }, { x: 1720, y: 890 }, ...Array.from({ length: 15 }, (_, i) => ({ x: 1050 + i * 337 % 1810, y: 680 + i * 271 % 1440 }))].map(compactPoint);
   var forests = [];
   function wildTreesFor(stage) {
     if (forests[stage]) return forests[stage];
@@ -44,14 +67,22 @@
       return seed2 / 4294967296;
     };
     const result = [], protectedPoints = [...wildNodes, ...wildSpiritHomes, ...chests, ...camps];
-    for (let i = 0; i < 4800; i++) {
+    for (let i = 0; i < 1600; i++) {
       const t = { x: 70 + random() * (REGION.width - 140), y: 130 + random() * (REGION.height - 210) };
-      if (t.x < 960 && t.y < 610 || t.x < 550 && t.y < 820) continue;
+      if (t.x < 960 && t.y < 610 || t.x < 550 && t.y < 820 || inTown(t)) continue;
       if (Math.abs(t.y - 735) < 75 || Math.abs(t.y - 1e3) < 45 || Math.abs(t.x - 455) < 65 || Math.abs(t.x - 1370) < 65) continue;
       if (protectedPoints.some((p) => Math.hypot(p.x - t.x, p.y - t.y) < 65) || result.some((p) => Math.hypot(p.x - t.x, p.y - t.y) < 72)) continue;
       result.push(t);
     }
     return forests[stage] = result;
+  }
+
+  // src/shared/types.ts
+  function isRecord(value) {
+    return typeof value === "object" && value !== null;
+  }
+  function isKey(object, key2) {
+    return typeof key2 === "string" && Object.prototype.hasOwnProperty.call(object, key2);
   }
 
   // src/shared/appearance.ts
@@ -152,8 +183,8 @@
     if (!isRecord(value) || !["tala", "isko", "amihan"].includes(String(value.character)) || !["field", "tavern"].includes(String(value.area))) return null;
     const character = value.character, area = value.area, look = restoreProfile(value.look, character);
     look.name = guestName(value.name);
-    const x = number(value.x, 0, area === "tavern" ? 768 : 6144), y = number(value.y, 0, area === "tavern" ? 512 : 4608);
-    return { name: look.name, character, look, area, stage: area === "tavern" ? 0 : (x >= 3072 ? 1 : 0) + (y >= 2304 ? 2 : 0), x, y, dir: isKey({ up: 1, down: 1, left: 1, right: 1 }, value.dir) ? value.dir : "down", walking: value.walking === true, walkTime: number(value.walkTime, 0, 1e8), swing: number(value.swing, 0, 0.32), shot: number(value.shot, 0, 0.22), dash: number(value.dash, 0, 0.18) };
+    const x = number(value.x, 0, area === "tavern" ? TAVERN.width : WORLD.width), y = number(value.y, 0, area === "tavern" ? TAVERN.height : WORLD.height);
+    return { name: look.name, character, look, area, stage: area === "tavern" ? 0 : regionAt(x, y), x, y, dir: isKey({ up: 1, down: 1, left: 1, right: 1 }, value.dir) ? value.dir : "down", walking: value.walking === true, walkTime: number(value.walkTime, 0, 1e8), swing: number(value.swing, 0, 0.32), shot: number(value.shot, 0, 0.22), dash: number(value.dash, 0, 0.18) };
   }
   function toGuestPose(s, name2) {
     const look = { name: name2, outfit: s.outfit, hat: s.hat, hair: s.hair, hairColor: s.hairColor, skin: s.skin, armor: s.armor, armors: [s.armor], weapon: s.weapon, weapons: [s.weapon], gear: { ...s.gear }, gearOwned: { ...s.gear }, xp: s.xp, hp: s.player.hp, stamina: 100 };
@@ -179,6 +210,11 @@
 
   // src/browser/multiplayer.ts
   var tracked = /* @__PURE__ */ new Map();
+  var bubbles = new SpeechBubbles();
+  var lastStatus = "";
+  function speechFor(id) {
+    return bubbles.get(id || guestId, performance.now());
+  }
   var configuredOrigin = document.querySelector('meta[name="baryo-guest-origin"]')?.content.trim() || "";
   var apiBase = (location.hostname === "127.0.0.1" || location.hostname === "localhost" ? "" : configuredOrigin) + "/api/guest/";
   var guestId = "";
@@ -194,6 +230,8 @@
   var epoch = 0;
   var getState;
   function status(text) {
+    if (text === lastStatus) return;
+    lastStatus = text;
     element("online-status").textContent = text;
     element("online-open").textContent = token ? "\u265F " + (tracked.size + 1) : "\u265F";
     element("online-open").title = text;
@@ -232,7 +270,7 @@
   }
   async function tick() {
     if (!desired || pendingEpoch === epoch) return;
-    const generation = epoch;
+    const generation = epoch, started = performance.now();
     pendingEpoch = generation;
     try {
       if (!token) {
@@ -244,7 +282,7 @@
       const data = await post("update", { pose });
       if (generation !== epoch) return;
       if (!Array.isArray(data.peers)) throw new Error("Invalid guest response");
-      const now = performance.now(), interval = lastReply ? Math.min(1200, Math.max(400, now - lastReply)) : 550;
+      const now = performance.now(), interval = lastReply ? Math.min(1200, Math.max(200, now - lastReply)) : 300;
       lastReply = now;
       const present = /* @__PURE__ */ new Set();
       for (const raw of data.peers.slice(0, 24)) {
@@ -259,7 +297,7 @@
       for (const id of tracked.keys()) if (!present.has(id)) tracked.delete(id);
       failures = 0;
       status("Online \xB7 " + room + " \xB7 " + (tracked.size + 1) + " guests");
-      if (Array.isArray(data.messages)) showMessages(data.messages);
+      if (Array.isArray(data.messages)) showMessages(data.messages, typeof data.now === "number" ? data.now : Date.now());
       element("online-players").textContent = [name, ...[...tracked.values()].map((p) => p.to.name)].join(" \xB7 ");
     } catch (error) {
       if (generation !== epoch) return;
@@ -269,7 +307,7 @@
       status((error instanceof Error && error.message === "Guest server unavailable" ? "Server unavailable" : "Reconnecting") + " \xB7 " + room);
     } finally {
       if (pendingEpoch === generation) pendingEpoch = -1;
-      if (generation === epoch) schedule(failures ? Math.min(8e3, 1e3 * failures) : document.hidden ? 2500 : 550);
+      if (generation === epoch) schedule(failures ? Math.min(8e3, 1e3 * failures) : document.hidden ? 2500 : Math.max(250, 300 - (performance.now() - started)));
     }
   }
   function interpolate(peer, now) {
@@ -291,6 +329,7 @@
     const previous = token;
     token = "";
     tracked.clear();
+    bubbles.clear();
     element("chat-messages").replaceChildren();
     chatSignature = "";
     sessionStorage.removeItem("baryo-online");
@@ -302,7 +341,8 @@
     }
   }
   var chatSignature = "";
-  function showMessages(messages) {
+  function showMessages(messages, serverNow = Date.now()) {
+    bubbles.receive(messages.filter((m) => isRecord(m) && typeof m.id === "string" && typeof m.guestId === "string" && typeof m.text === "string" && typeof m.createdAt === "number"), performance.now(), serverNow);
     const signature = JSON.stringify(messages);
     if (signature === chatSignature) return;
     chatSignature = signature;
@@ -328,6 +368,7 @@
       const panel2 = element("room-chat");
       panel2.hidden = !panel2.hidden;
       if (!panel2.hidden) document.getElementById("chat-input").focus();
+      else element("game").focus();
     });
     document.getElementById("chat-form").addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -335,12 +376,20 @@
       if (!text || !token) return;
       const button = element("chat-send");
       button.disabled = true;
+      input.value = "";
+      bubbles.say(guestId, text, performance.now());
+      element("game").focus();
       try {
-        await post("chat", { text });
-        input.value = "";
+        const data = await post("chat", { text });
+        if (isRecord(data.message)) {
+          const log = element("chat-messages"), item = document.createElement("p");
+          item.textContent = name + ": " + text;
+          log.append(item);
+          log.scrollTop = log.scrollHeight;
+        }
         element("chat-error").textContent = "";
-        schedule(300);
       } catch (error) {
+        input.value = text;
         element("chat-error").textContent = error instanceof Error ? error.message : "Message not sent";
       } finally {
         button.disabled = !token;
@@ -533,10 +582,10 @@
   var spiritHomes = [{ x: 715, y: 295 }, { x: 815, y: 340 }, { x: 748, y: 381 }, ...wildSpiritHomes];
   var quests = [{ title: "A sweet little favor", description: "Bring 3 mangoes to Lola Rosa by the plaza.", goal: 3, item: "mango", npc: "lola", reward: 25 }, { title: "Flowers for the fiesta", description: "Bring 3 sampaguita to Aling Nena at the sari-sari store.", goal: 3, item: "flowers", npc: "nena", reward: 35 }, { title: "A clear path home", description: "Shoo 3 playful leaf sprites near the rice fields, then visit Kuya Benji.", goal: 3, item: "cleared", npc: "benji", reward: 50 }];
   var stages = [
-    { name: "Maligaya Barrio", region: "LOWLAND LUZON", architecture: "Bahay kubo", note: "Raised bamboo homes and broad nipa roofs frame this sunny fictional barrio.", theme: "barrio", tasks: quests },
-    { name: "Heritage Streets", region: "VIGAN-INSPIRED \xB7 ILOCOS", architecture: "Bahay na bato", note: "Stone lower floors, timber upper stories, capiz-style window grids, and tiled roofs inspired by Vigan\u2019s heritage streets.", theme: "vigan", tasks: [{ title: "A potter\u2019s welcome", description: "Bring 3 clay bundles to Aling Pilar at the plaza.", goal: 3, item: "clay", npc: "lola", reward: 45 }, { title: "Flowers along the street", description: "Bring 4 sampaguita to Mang Tomas at the heritage shop.", goal: 4, item: "flowers", npc: "nena", reward: 55 }, { title: "A quiet kalesa route", description: "Shoo 4 sprites on the eastern street, then see Kuya Benji.", goal: 4, item: "cleared", npc: "benji", reward: 70 }] },
-    { name: "Highland Terraces", region: "IFUGAO-INSPIRED \xB7 CORDILLERA", architecture: "Bale houses", note: "Steep thatched roofs, elevated timber houses, and stepped rice terraces inspired by Ifugao architecture and landscapes.", theme: "ifugao", tasks: [{ title: "Rice for the gathering", description: "Bring 3 rice bundles to Ate Laya near the highland house.", goal: 3, item: "rice", npc: "lola", reward: 65 }, { title: "Bamboo for the footpath", description: "Bring 3 bamboo bundles to Mang Dado at the workshop.", goal: 3, item: "bamboo", npc: "nena", reward: 75 }, { title: "A peaceful mountain trail", description: "Shoo 4 sprites beside the terraces, then visit Kuya Benji.", goal: 4, item: "cleared", npc: "benji", reward: 90 }] },
-    { name: "Lakeside Gathering", region: "MARANAO-INSPIRED \xB7 LANAO", architecture: "Torogan-inspired hall", note: "A raised timber hall with a sweeping roof and decorative projecting beams inspired by the Maranao torogan and its panolong.", theme: "maranao", tasks: [{ title: "Wood for the craft table", description: "Bring 3 carving-wood bundles to Ate Salma near the hall.", goal: 3, item: "wood", npc: "lola", reward: 85 }, { title: "A woven welcome", description: "Bring 3 woven-cloth bundles to Kuya Amir at the lakeside stall.", goal: 3, item: "cloth", npc: "nena", reward: 95 }, { title: "The final gathering", description: "Shoo 5 sprites along the lakeside path, then see Kuya Benji.", goal: 5, item: "cleared", npc: "benji", reward: 120 }] }
+    { name: "Bayan Maligaya", region: "LOWLAND LUZON", architecture: "Bahay kubo", note: "Raised bamboo homes and broad nipa roofs frame this sunny fictional barrio.", theme: "barrio", tasks: quests },
+    { name: "Heritage Streets", region: "VISAYAS \xB7 HERITAGE TOWN", architecture: "Bahay na bato", note: "Stone lower floors, timber upper stories, capiz-style window grids, and tiled roofs inspired by heritage towns of the Visayas.", theme: "vigan", tasks: [{ title: "A potter\u2019s welcome", description: "Bring 3 clay bundles to Aling Pilar at the plaza.", goal: 3, item: "clay", npc: "lola", reward: 45 }, { title: "Flowers along the street", description: "Bring 4 sampaguita to Mang Tomas at the heritage shop.", goal: 4, item: "flowers", npc: "nena", reward: 55 }, { title: "A quiet kalesa route", description: "Shoo 4 sprites on the eastern street, then see Kuya Benji.", goal: 4, item: "cleared", npc: "benji", reward: 70 }] },
+    { name: "Highland Terraces", region: "LUZON \xB7 CORDILLERA", architecture: "Bale houses", note: "Steep thatched roofs, elevated timber houses, and stepped rice terraces inspired by Ifugao architecture and landscapes.", theme: "ifugao", tasks: [{ title: "Rice for the gathering", description: "Bring 3 rice bundles to Ate Laya near the highland house.", goal: 3, item: "rice", npc: "lola", reward: 65 }, { title: "Bamboo for the footpath", description: "Bring 3 bamboo bundles to Mang Dado at the workshop.", goal: 3, item: "bamboo", npc: "nena", reward: 75 }, { title: "A peaceful mountain trail", description: "Shoo 4 sprites beside the terraces, then visit Kuya Benji.", goal: 4, item: "cleared", npc: "benji", reward: 90 }] },
+    { name: "Lakeside Gathering", region: "MINDANAO \xB7 LANAO", architecture: "Torogan-inspired hall", note: "A raised timber hall with a sweeping roof and decorative projecting beams inspired by the Maranao torogan and its panolong.", theme: "maranao", tasks: [{ title: "Wood for the craft table", description: "Bring 3 carving-wood bundles to Ate Salma near the hall.", goal: 3, item: "wood", npc: "lola", reward: 85 }, { title: "A woven welcome", description: "Bring 3 woven-cloth bundles to Kuya Amir at the lakeside stall.", goal: 3, item: "cloth", npc: "nena", reward: 95 }, { title: "The final gathering", description: "Shoo 5 sprites along the lakeside path, then see Kuya Benji.", goal: 5, item: "cleared", npc: "benji", reward: 120 }] }
   ];
   var itemLabels = { mango: "mangga", flowers: "sampaguita", buko: "buko", clay: "clay bundles", rice: "rice bundles", bamboo: "bamboo bundles", wood: "carving wood", cloth: "woven cloth", cleared: "shades" };
   function stageInfo(s) {
@@ -554,7 +603,7 @@
   var homeCache = [];
   function stageBuildings(s) {
     const i = s.stage || 0;
-    return buildingCache[i] ??= buildings.map((b, j) => i === 0 ? b : { ...b, type: i === 1 ? "bato" : i === 2 ? "bale" : j === 1 ? "torogan" : "pavilion", w: i === 1 ? b.w + 12 : i === 3 && j === 1 ? 158 : b.w, h: i === 1 ? 92 : i === 2 ? 96 : i === 3 ? 98 : b.h }).map((b) => inRegion(b, i));
+    return buildingCache[i] ??= [...buildings, ...i === 0 ? townBuildings : []].map((b, j) => i === 0 ? b : { ...b, type: i === 1 ? "bato" : i === 2 ? "bale" : j === 1 ? "torogan" : "pavilion", w: i === 1 ? b.w + 12 : i === 3 && j === 1 ? 158 : b.w, h: i === 1 ? 92 : i === 2 ? 96 : i === 3 ? 98 : b.h }).map((b) => inRegion(b, i));
   }
   function stageTrees(s) {
     return treeCache[s.stage] ??= [...s.stage === 3 ? trees.filter((t) => t.x !== 265 && t.y < 451) : trees, ...wildTreesFor(s.stage)].map((t) => inRegion(t, s.stage));
@@ -606,7 +655,7 @@
     return true;
   }
   function create() {
-    return { version: 4, profiles: createProfiles(), armor: "linen", armors: ["linen", "abaca"], hair: "natural", skin: "natural", hairColor: "ink", worldVersion: 1, weapon: "yantok", weapons: ["yantok", "tirador"], area: "tavern", chests: [0, 0, 0, 0], loreSeen: [false, false, false, false], xp: 0, gear: { arnis: 0, sandals: 0, agimat: 0 }, gearOwned: { arnis: 0, sandals: 0, agimat: 0 }, stage: 0, stageProgress: [0, 0, 0, 0], clearStart: [0, 0, 0, 0], unlocked: 0, arrival: 0, transition: null, character: "tala", name: "Tala", outfit: "terracotta", hat: "salakot", coins: 0, mango: 0, flowers: 0, buko: 0, beads: 0, clay: 0, rice: 0, bamboo: 0, wood: 0, cloth: 0, cleared: 0, quest: 0, completed: [], projectiles: [], player: { ...TAVERN.spawn, shot: 0, shotCooldown: 0, dir: "down", hp: 5, stamina: 100, walking: false, walkTime: 0, swing: 0, cooldown: 0, dash: 0, dashCooldown: 0, invincible: 0 }, nodes: nodes.map(() => 0), spirits: spiritHomes.map((h, i) => ({ ...h, hp: 2, dead: 0, phase: i * 2, flash: 0 })), time: 0, paused: false, compact: false, eventId: 0, events: [], savedAt: Date.now() };
+    return { version: 4, profiles: createProfiles(), armor: "linen", armors: ["linen", "abaca"], hair: "natural", skin: "natural", hairColor: "ink", worldVersion: 2, weapon: "yantok", weapons: ["yantok", "tirador"], area: "tavern", chests: [0, 0, 0, 0], loreSeen: [false, false, false, false], xp: 0, gear: { arnis: 0, sandals: 0, agimat: 0 }, gearOwned: { arnis: 0, sandals: 0, agimat: 0 }, stage: 0, stageProgress: [0, 0, 0, 0], clearStart: [0, 0, 0, 0], unlocked: 0, arrival: 0, transition: null, character: "tala", name: "Tala", outfit: "terracotta", hat: "salakot", coins: 0, mango: 0, flowers: 0, buko: 0, beads: 0, clay: 0, rice: 0, bamboo: 0, wood: 0, cloth: 0, cleared: 0, quest: 0, completed: [], projectiles: [], player: { ...TAVERN.spawn, shot: 0, shotCooldown: 0, dir: "down", hp: 5, stamina: 100, walking: false, walkTime: 0, swing: 0, cooldown: 0, dash: 0, dashCooldown: 0, invincible: 0 }, nodes: nodes.map(() => 0), spirits: spiritHomes.map((h, i) => ({ ...h, hp: 2, dead: 0, phase: i * 2, flash: 0 })), time: 0, paused: false, compact: false, eventId: 0, events: [], savedAt: Date.now() };
   }
   function emit(s, text, type = "notice", x = s.player.x, y = s.player.y) {
     s.eventId++;
@@ -623,7 +672,7 @@
       { id: "bed", name: "Rest", kind: "rest", x: 654, y: 251 }
     ];
     return [
-      ...s.stage === 0 ? [{ id: "inn", name: "Enter tavern", kind: "door", ...TAVERN.entrance }] : [],
+      ...s.stage === 0 ? [{ id: "plaza", name: "Town plaza \xB7 Pahinga", kind: "rest", x: 735, y: 800 }, { id: "inn", name: "Enter tavern", kind: "door", ...TAVERN.entrance }] : [],
       ...chests.filter((_, i) => !(s.chests[s.stage] & 1 << i)).map((p) => ({ ...p, id: "chest-" + chests.indexOf(p), name: "Open chest", kind: "chest", chest: chests.indexOf(p) })).map((f) => inRegion(f, s.stage)),
       ...camps.map((p, i) => ({ ...p, id: "camp-" + i, name: "Rest", kind: "rest" })).map((f) => inRegion(f, s.stage)),
       ...passages.filter((p) => p.a === s.stage || p.b === s.stage).map((p, i) => {
@@ -639,6 +688,7 @@
     const stage = regionAt(x, y), o = regionOrigin(stage), lx = x - o.x, ly = y - o.y;
     if (stage > (s.unlocked ?? s.stage)) return true;
     if (ly > 456 && ly < (stage === 3 && lx < 960 ? 600 : 505) && !(lx > 425 && lx < 490 || lx > 1340 && lx < 1400)) return true;
+    if (stage === 0 && Math.hypot(lx - 735, ly - 750) < 26) return true;
     if (stage === 0 && Math.abs(lx - 392) < 100 && ly > 623 && ly < 696) return true;
     if (stageBuildings({ stage }).some((b) => x > b.x - b.w / 2 - 5 && x < b.x + b.w / 2 + 5 && y > b.y - 20 && y < b.y + b.h * 0.48)) return true;
     if (stageTrees({ stage }).some((t) => Math.abs(x - t.x) < 12 && Math.abs(y - t.y) < 9)) return true;
@@ -970,10 +1020,10 @@
         emit(s, "Encounter: " + legendFor(s).name + " \xB7 " + legendFor(s).warning, "lore");
       }
       const h = homes[i], pace = [0.55, 1.15, 0.75, 0.85][s.stage], tx = h.x + Math.sin(e.phase * pace) * [24, 38, 28, 32][s.stage], ty = h.y + Math.cos(e.phase * (pace + 0.2)) * 16;
-      const distance = Math.hypot(p.x - e.x, p.y - e.y), alert = distance < 115 && distance > 12, rate = alert ? (25 + s.stage * 5) * dt / (distance || 1) : Math.min(1, dt * 1.5), nx = e.x + ((alert ? p.x : tx) - e.x) * rate, ny = e.y + ((alert ? p.y : ty) - e.y) * rate;
-      if (!blocked(nx, e.y, s)) e.x = nx;
-      if (!blocked(e.x, ny, s)) e.y = ny;
-      if (Math.hypot(p.x - e.x, p.y - e.y) < 15 && p.invincible <= 0 && p.dash <= 0) {
+      const distance = Math.hypot(p.x - e.x, p.y - e.y), alert = distance < 115 && distance > 12 && !(s.stage === 0 && inTown(p)), rate = alert ? (25 + s.stage * 5) * dt / (distance || 1) : Math.min(1, dt * 1.5), nx = e.x + ((alert ? p.x : tx) - e.x) * rate, ny = e.y + ((alert ? p.y : ty) - e.y) * rate;
+      if (!blocked(nx, e.y, s) && !(s.stage === 0 && inTown({ x: nx, y: e.y }))) e.x = nx;
+      if (!blocked(e.x, ny, s) && !(s.stage === 0 && inTown({ x: e.x, y: ny }))) e.y = ny;
+      if (!(s.stage === 0 && inTown(p)) && Math.hypot(p.x - e.x, p.y - e.y) < 15 && p.invincible <= 0 && p.dash <= 0) {
         p.hp--;
         p.invincible = 1.8;
         emit(s, "Watch out! " + legendFor(s).shade + " nearby.", "hurt");
@@ -1044,7 +1094,13 @@
     s.transition = null;
     s.weapons = Array.isArray(raw.weapons) ? [.../* @__PURE__ */ new Set(["yantok", "tirador", ...raw.weapons.filter((id) => typeof id === "string" && isKey(weapons, id))])] : ["yantok", "tirador"];
     s.weapon = typeof raw.weapon === "string" && s.weapons.includes(raw.weapon) ? raw.weapon : "yantok";
-    const p = isRecord(raw.player) && s.area === "field" && raw.worldVersion !== 1 && typeof raw.player.x === "number" && typeof raw.player.y === "number" ? inRegion({ ...raw.player, x: raw.player.x, y: raw.player.y }, s.stage) : raw.player;
+    let p = raw.player;
+    if (isRecord(raw.player) && s.area === "field" && typeof raw.player.x === "number" && typeof raw.player.y === "number") {
+      if (raw.worldVersion === 1) {
+        const oldOrigin = { x: s.stage % 2 * 3072, y: Math.floor(s.stage / 2) * 2304 };
+        p = inRegion(compactPoint({ ...raw.player, x: raw.player.x - oldOrigin.x, y: raw.player.y - oldOrigin.y }), s.stage);
+      } else if (raw.worldVersion !== 2) p = inRegion(compactPoint({ ...raw.player, x: raw.player.x, y: raw.player.y }), s.stage);
+    }
     if (s.area === "field") {
       s.player.x = 392 + regionOrigin(s.stage).x;
       s.player.y = 284 + regionOrigin(s.stage).y;
@@ -1056,7 +1112,7 @@
       if (p.dir === "up" || p.dir === "down" || p.dir === "left" || p.dir === "right") s.player.dir = p.dir;
       s.player.hp = typeof p.hp === "number" && Number.isFinite(p.hp) ? Math.max(1, Math.min(maxHealth(s), p.hp)) : maxHealth(s);
     }
-    if (raw.worldVersion === 1 && isRecord(p) && typeof p.x === "number" && Number.isFinite(p.x) && typeof p.y === "number" && Number.isFinite(p.y) && s.area === "field" && regionAt(p.x, p.y) === s.stage && p.x > 20 && p.y > 86 && p.x < WORLD.width - 20 && p.y < WORLD.height - 20 && blocked(p.x, p.y, s)) {
+    if ((raw.worldVersion === 1 || raw.worldVersion === 2) && isRecord(p) && typeof p.x === "number" && Number.isFinite(p.x) && typeof p.y === "number" && Number.isFinite(p.y) && s.area === "field" && regionAt(p.x, p.y) === s.stage && p.x > 20 && p.y > 86 && p.x < WORLD.width - 20 && p.y < WORLD.height - 20 && blocked(p.x, p.y, s)) {
       let found = false;
       for (let radius = 8; radius <= 80 && !found; radius += 8) for (let i = 0; i < 12; i++) {
         const x = p.x + Math.cos(i * Math.PI / 6) * radius, y = p.y + Math.sin(i * Math.PI / 6) * radius;
@@ -1331,6 +1387,19 @@
         action2("dash");
       }
       if (event.code === "Escape") action2("pause");
+    }
+  });
+  element("chat-input").addEventListener("focus", () => {
+    keys.clear();
+    target = null;
+    route = [];
+    state.player.walking = false;
+  });
+  element("chat-input").addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      element("room-chat").hidden = true;
+      element("game").focus();
     }
   });
   window.addEventListener("keyup", (event) => {
@@ -1967,6 +2036,10 @@
         ink.moveTo(455 * sx, 1e3 * sy);
         ink.lineTo(256, 1e3 * sy);
         ink.stroke();
+        if (state3.stage === 0) {
+          ink.fillStyle = "#d8cbac";
+          ink.fillRect(TOWN.x * sx, TOWN.y * sy, TOWN.width * sx, TOWN.height * sy);
+        }
         for (const building of stageBuildings(state3)) {
           const p2 = position(building);
           ink.fillStyle = "#d6c59a";
@@ -2018,7 +2091,7 @@
           ink.fill();
         }
       }
-      element("minimap-place").textContent = outside ? stageInfo(state3).name : "Bahay Pahinga";
+      element("minimap-place").textContent = outside ? islandNames[state3.stage] + " \xB7 " + stageInfo(state3).name : "Bahay Pahinga";
       canvas.setAttribute("aria-label", outside ? "Map of " + stageInfo(state3).name + ". White arrow: you. Gold: villagers and treasure. Green: rest camps. Locks: closed paths." : "Map of Bahay Pahinga. White arrow: you. Gold: companions. Green: exit.");
     }
     map.clearRect(0, 0, 256, 192);
@@ -2212,8 +2285,8 @@
     rect(1340, 130, 60, REGION.height - 130, path);
     rect(455, 980, REGION.width - 455, 35, path);
     rect(850, 344, 550, 45, path);
-    for (let i = 0; i < 5400; i++) {
-      const x = i * 173 % 3060, y = 100 + i * 127 % 2190;
+    for (let i = 0; i < 2e3; i++) {
+      const x = i * 173 % (REGION.width - 12), y = 100 + i * 127 % (REGION.height - 110);
       if (x < 960 && y < 600 || x < camera.x - 5 || x > camera.x + W + 5 || y < camera.y - 5 || y > camera.y + H + 5) continue;
       if (Math.abs(y - 735) < 25 || Math.abs(x - 455) < 33 || Math.abs(x - 1370) < 32 || Math.abs(y - 997) < 19) continue;
       rect(x, y, 2, 1, i % 3 ? "#628b5a" : "#abc186");
@@ -2391,6 +2464,13 @@
     ctx.fillText(label, peer.x, peer.y - 64);
   }
   function fieldFeature(f) {
+    if (f.id === "plaza") {
+      ctx.fillStyle = "#617358";
+      ctx.font = "8px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("\u2661", f.x, f.y - 10);
+      return;
+    }
     if (f.kind === "chest") {
       rect(f.x - 12, f.y - 10, 24, 16, "#8c6241");
       rect(f.x - 13, f.y - 16, 26, 9, "#c19956");
@@ -2454,6 +2534,7 @@
       wildGround();
       ground();
       localAmbient();
+      if (stage === 0) townGround();
       if (stage > actual.unlocked) {
         ctx.fillStyle = "#15262bd9";
         ctx.fillRect(0, 0, REGION.width, REGION.height);
@@ -2462,6 +2543,96 @@
     }
     state2 = actual;
     camera = savedCamera;
+  }
+  function townGround() {
+    const t = TOWN;
+    rect(t.x - 8, t.y - 8, t.width + 16, t.height + 16, "#ac9a77");
+    rect(t.x, t.y, t.width, t.height, "#d0c4a3");
+    for (let y = t.y; y < t.y + t.height; y += 18) for (let x = t.x; x < t.x + t.width; x += 24) {
+      rect(x, y, 23, 17, (x + y) % 3 ? "#d8ceb1" : "#c4b99b");
+    }
+    rect(475, 716, 76, 32, "#d0c4a3");
+    for (const x of [566, 950]) {
+      rect(x, 685, 3, 186, "#8b7758");
+      for (let y = 685; y < 871; y += 46) {
+        rect(x - 3, y, 9, 12, "#ba805c");
+        rect(x - 5, y - 5, 13, 7, "#7e9b65");
+      }
+    }
+    line([[580, 638], [735, 671], [927, 638]], "#797552", 1);
+    for (let i = 0; i < 19; i++) {
+      const x = 587 + i * 18, y = 640 + Math.sin(i / 18 * Math.PI) * 28;
+      ctx.fillStyle = ["#d58c71", "#dfbd6d", "#83a99c", "#b49fbe"][i % 4];
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 9, y + 1);
+      ctx.lineTo(x + 5, y + 11);
+      ctx.fill();
+    }
+    for (const [x, y] of [[630, 835], [845, 835]]) {
+      rect(x - 21, y - 10, 42, 7, "#886847");
+      rect(x - 21, y, 42, 7, "#aa8458");
+      rect(x - 17, y + 7, 3, 7, "#71583e");
+      rect(x + 14, y + 7, 3, 7, "#71583e");
+    }
+    ctx.font = "bold 9px monospace";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#655a45";
+    ctx.fillText("PLAZA MALIGAYA", 755, 900);
+    for (const x of [605, 900]) {
+      rect(x, 670, 3, 50, "#715c43");
+      rect(x - 5, 659, 13, 15, "#715c43");
+      rect(x - 3, 662, 9, 9, "#f0d397");
+      oval(x + 1, 668, 18, 22, "#f0d39716");
+    }
+  }
+  function townFountain() {
+    oval(735, 759, 38, 16, "#626e6044");
+    oval(735, 750, 34, 17, "#9b9983");
+    oval(735, 746, 30, 13, "#6eaaa5");
+    oval(735, 744, 23, 9, "#92c4ba");
+    rect(731, 722, 8, 23, "#b9b8a0");
+    oval(735, 721, 18, 6, "#d3cbb0");
+    oval(735, 720, 14, 4, "#7caeaa");
+    rect(733, 705, 4, 14, "#e0d8b9");
+    for (let i = 0; i < 6; i++) {
+      const a = clock * 2 + i;
+      rect(735 + Math.sin(a) * 22, 729 + a % 2 * 8, 2, 4, "#d8e8d2");
+    }
+  }
+  function speech(x, y, text) {
+    if (!text) return;
+    ctx.font = "8px system-ui";
+    const lines = [];
+    let line2 = "";
+    for (const word of text.split(/\s+/)) {
+      const next = line2 ? line2 + " " + word : word;
+      if (ctx.measureText(next).width > 126 && line2) {
+        lines.push(line2);
+        line2 = word;
+      } else line2 = next;
+    }
+    if (line2) lines.push(line2);
+    const shown = lines.slice(0, 3).map((l) => l.length > 28 ? l.slice(0, 27) + "\u2026" : l);
+    if (lines.length > 3) shown[2] = shown[2].slice(0, 25) + "\u2026";
+    const width = Math.min(142, Math.max(34, ...shown.map((l) => ctx.measureText(l).width + 16))), height = shown.length * 12 + 12;
+    const left = clamp(x - width / 2, camera.x + 6, camera.x + W - width - 6), top = Math.max(camera.y + 8, y - 96 - height);
+    ctx.fillStyle = "#fff5df";
+    ctx.strokeStyle = "#839779";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(left, top, width, height, 5);
+    ctx.fill();
+    ctx.stroke();
+    const tip = clamp(x, left + 8, left + width - 8);
+    ctx.beginPath();
+    ctx.moveTo(tip - 4, top + height);
+    ctx.lineTo(tip, top + height + 5);
+    ctx.lineTo(tip + 4, top + height);
+    ctx.fill();
+    ctx.fillStyle = "#345244";
+    ctx.textAlign = "center";
+    shown.forEach((l, i) => ctx.fillText(l, left + width / 2, top + 15 + i * 12, 126));
   }
   function regionalObject(stage, draw) {
     const actual = state2;
@@ -3104,6 +3275,16 @@
       ...stageNodes(state2).filter((n) => visible(n)).map((n) => ({ y: n.y, draw: () => drawNode(n) })),
       ...features(state2).filter((f) => visible(f)).map((f) => ({ y: f.y, draw: () => fieldFeature(f) }))
     ];
+    if (state2.area === "field" && state2.stage === 0) {
+      objects.push({ y: 755, draw: townFountain });
+      for (let i = 0; i < 3; i++) {
+        const x = 620 + i * 100 + Math.sin(clock * 0.35 + i) * 8, y = 878 + Math.cos(clock * 0.4 + i) * 3;
+        objects.push({ y, draw: () => {
+          oval(x, y + 3, 9, 3, "#526c3f33");
+          profileSprite(ctx, x, y, ["tala", "isko", "amihan"][i], characterProfile(state2, ["tala", "isko", "amihan"][i]), 0.75, "down", "idle", clock * 3 + i);
+        } });
+      }
+    }
     if (state2.area === "field" && visible(TAVERN.entrance)) objects.push({ y: 695, draw: tavernOutside });
     for (const e of state2.spirits) if (state2.area === "field" && e.dead <= 0) objects.push({ y: e.y, draw: () => spirit(e) });
     for (const peer of remoteGuests(state2.area)) if (visible(peer)) objects.push({ y: peer.y, draw: () => remoteGuest(peer) });
@@ -3200,6 +3381,8 @@
       ctx.font = "12px Georgia";
       ctx.fillText("Salamat, kaibigan!", 450, 230 + Math.sin(clock) * 2);
     }
+    for (const peer of remoteGuests(state2.area)) if (visible(peer)) speech(peer.x, peer.y, speechFor(peer.id));
+    speech(p.x, p.y, speechFor());
     ctx.restore();
     const lantern = ctx.createRadialGradient(p.x - camera.x, p.y - camera.y, 42, p.x - camera.x, p.y - camera.y, Math.max(W, H) * 0.7);
     lantern.addColorStop(0, "#d8ae5700");

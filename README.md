@@ -72,7 +72,7 @@ The sprites and scenery use Canvas drawing code written in TypeScript. There are
 
 ## Connected world
 
-The field is one continuous 6,144 × 4,608 world divided into four connected biomes. Walk along the trails to choose where to explore; there are no region tabs. A small corner minimap shows your position, villagers, treasure, rest camps, and locked paths. Paths open after 6, 15, and 30 total monster clears, or by completing the previous region’s favors. Crossing an unlocked border keeps movement and health continuous. Coins, materials, character appearance, and completed favors persist across areas and saves.
+The field is one continuous 3,840 × 2,880 world divided into four connected biomes. Walk along the trails to choose where to explore; there are no region tabs. A small corner minimap shows your position, villagers, treasure, rest camps, and locked paths. Paths open after 6, 15, and 30 total monster clears, or by completing the previous region’s favors. Crossing an unlocked border keeps movement and health continuous. Coins, materials, character appearance, and completed favors persist across areas and saves.
 
 | Stage | Setting | Buildings and scenery | New tasks |
 | --- | --- | --- | --- |
@@ -152,3 +152,9 @@ The Vercel frontend connects to the hosted guest server at https://mosslight-idl
 Open the guest button (♟), choose **Create world** or enter a world code and **Join world**. Share **Copy invite** with friends. Up to 24 guests in the same code can see each other in the outdoor world and tavern, including their outfits, and use 💬 to chat. Each player keeps their own quest, combat, inventory, and progression save. This is shared presence and chat, not synchronized cooperative combat.
 
 Local preview uses the local guest server. The online service uses D1 for presence and recent chat, expiring guests after 20 seconds without a heartbeat and returning the last 30 messages from five minutes. If you add a production domain, add its exact origin to `GUEST_ORIGINS` and republish the guest server.
+
+## Plaza and speech
+
+Bayan Maligaya has a safe plaza east of the tavern with a fountain, benches, lanterns, shops and townsfolk. Rest at the heart marker. The compact regions retain Luzon (barrio and Cordillera), Visayas (heritage town), and Mindanao (lakeside) settings. Version-1 large-world coordinates migrate once, preserving inventory and progress.
+
+Guest chat appears above the speaking character for 5.5 seconds. Sending immediately returns keyboard focus to the game; Escape closes chat. Incoming historical chat stays in the log without replaying old speech bubbles. Movement presence polls every 300 ms plus network overhead, with a 250 ms minimum pause between requests and interpolation between updates.

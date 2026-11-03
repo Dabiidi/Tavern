@@ -4,8 +4,8 @@ import { armors, hairStyles, skinTones, hairColors } from './appearance';
 export { armors, hairStyles, skinTones, hairColors } from './appearance';
 import { weapons, weaponInfo } from './weapons';
 export { weapons, weaponInfo } from './weapons';
-import { WORLD, REGION, regionOrigin, regionAt, inRegion, regionLocks, passages, TAVERN, companions, tavernFurniture, wildNodes, wildTreesFor, wildSpiritHomes, chests, camps } from './world';
-export { WORLD, REGION, regionOrigin, regionAt, inRegion, regionLocks, passages, TAVERN, companions, tavernFurniture, chests, camps } from './world';
+import { WORLD, REGION, regionOrigin, regionAt, inRegion, regionLocks, passages, TAVERN, companions, tavernFurniture, wildNodes, wildTreesFor, wildSpiritHomes, chests, camps, compactPoint, townBuildings, inTown, TOWN, islandNames } from './world';
+export { WORLD, REGION, regionOrigin, regionAt, inRegion, regionLocks, passages, TAVERN, companions, tavernFurniture, chests, camps, TOWN, inTown, islandNames } from './world';
 import { legendFor } from './folklore';
 export { legends, legendFor, chapterFor } from './folklore';
 import { isRecord, isKey } from './types';
@@ -30,17 +30,17 @@ export const nodes: HarvestNode[] =[{id:0,x:115,y:324,type:'mango'},{id:1,x:276,
 export const spiritHomes=[{x:715,y:295},{x:815,y:340},{x:748,y:381},...wildSpiritHomes];
 export const quests: Quest[] =[{title:'A sweet little favor',description:'Bring 3 mangoes to Lola Rosa by the plaza.',goal:3,item:'mango',npc:'lola',reward:25},{title:'Flowers for the fiesta',description:'Bring 3 sampaguita to Aling Nena at the sari-sari store.',goal:3,item:'flowers',npc:'nena',reward:35},{title:'A clear path home',description:'Shoo 3 playful leaf sprites near the rice fields, then visit Kuya Benji.',goal:3,item:'cleared',npc:'benji',reward:50}];
 export const stages: Stage[] =[
-    {name:'Maligaya Barrio',region:'LOWLAND LUZON',architecture:'Bahay kubo',note:'Raised bamboo homes and broad nipa roofs frame this sunny fictional barrio.',theme:'barrio',tasks:quests},
-    {name:'Heritage Streets',region:'VIGAN-INSPIRED · ILOCOS',architecture:'Bahay na bato',note:'Stone lower floors, timber upper stories, capiz-style window grids, and tiled roofs inspired by Vigan’s heritage streets.',theme:'vigan',tasks:[{title:'A potter’s welcome',description:'Bring 3 clay bundles to Aling Pilar at the plaza.',goal:3,item:'clay',npc:'lola',reward:45},{title:'Flowers along the street',description:'Bring 4 sampaguita to Mang Tomas at the heritage shop.',goal:4,item:'flowers',npc:'nena',reward:55},{title:'A quiet kalesa route',description:'Shoo 4 sprites on the eastern street, then see Kuya Benji.',goal:4,item:'cleared',npc:'benji',reward:70}]},
-    {name:'Highland Terraces',region:'IFUGAO-INSPIRED · CORDILLERA',architecture:'Bale houses',note:'Steep thatched roofs, elevated timber houses, and stepped rice terraces inspired by Ifugao architecture and landscapes.',theme:'ifugao',tasks:[{title:'Rice for the gathering',description:'Bring 3 rice bundles to Ate Laya near the highland house.',goal:3,item:'rice',npc:'lola',reward:65},{title:'Bamboo for the footpath',description:'Bring 3 bamboo bundles to Mang Dado at the workshop.',goal:3,item:'bamboo',npc:'nena',reward:75},{title:'A peaceful mountain trail',description:'Shoo 4 sprites beside the terraces, then visit Kuya Benji.',goal:4,item:'cleared',npc:'benji',reward:90}]},
-    {name:'Lakeside Gathering',region:'MARANAO-INSPIRED · LANAO',architecture:'Torogan-inspired hall',note:'A raised timber hall with a sweeping roof and decorative projecting beams inspired by the Maranao torogan and its panolong.',theme:'maranao',tasks:[{title:'Wood for the craft table',description:'Bring 3 carving-wood bundles to Ate Salma near the hall.',goal:3,item:'wood',npc:'lola',reward:85},{title:'A woven welcome',description:'Bring 3 woven-cloth bundles to Kuya Amir at the lakeside stall.',goal:3,item:'cloth',npc:'nena',reward:95},{title:'The final gathering',description:'Shoo 5 sprites along the lakeside path, then see Kuya Benji.',goal:5,item:'cleared',npc:'benji',reward:120}]}
+    {name:'Bayan Maligaya',region:'LOWLAND LUZON',architecture:'Bahay kubo',note:'Raised bamboo homes and broad nipa roofs frame this sunny fictional barrio.',theme:'barrio',tasks:quests},
+    {name:'Heritage Streets',region:'VISAYAS · HERITAGE TOWN',architecture:'Bahay na bato',note:'Stone lower floors, timber upper stories, capiz-style window grids, and tiled roofs inspired by heritage towns of the Visayas.',theme:'vigan',tasks:[{title:'A potter’s welcome',description:'Bring 3 clay bundles to Aling Pilar at the plaza.',goal:3,item:'clay',npc:'lola',reward:45},{title:'Flowers along the street',description:'Bring 4 sampaguita to Mang Tomas at the heritage shop.',goal:4,item:'flowers',npc:'nena',reward:55},{title:'A quiet kalesa route',description:'Shoo 4 sprites on the eastern street, then see Kuya Benji.',goal:4,item:'cleared',npc:'benji',reward:70}]},
+    {name:'Highland Terraces',region:'LUZON · CORDILLERA',architecture:'Bale houses',note:'Steep thatched roofs, elevated timber houses, and stepped rice terraces inspired by Ifugao architecture and landscapes.',theme:'ifugao',tasks:[{title:'Rice for the gathering',description:'Bring 3 rice bundles to Ate Laya near the highland house.',goal:3,item:'rice',npc:'lola',reward:65},{title:'Bamboo for the footpath',description:'Bring 3 bamboo bundles to Mang Dado at the workshop.',goal:3,item:'bamboo',npc:'nena',reward:75},{title:'A peaceful mountain trail',description:'Shoo 4 sprites beside the terraces, then visit Kuya Benji.',goal:4,item:'cleared',npc:'benji',reward:90}]},
+    {name:'Lakeside Gathering',region:'MINDANAO · LANAO',architecture:'Torogan-inspired hall',note:'A raised timber hall with a sweeping roof and decorative projecting beams inspired by the Maranao torogan and its panolong.',theme:'maranao',tasks:[{title:'Wood for the craft table',description:'Bring 3 carving-wood bundles to Ate Salma near the hall.',goal:3,item:'wood',npc:'lola',reward:85},{title:'A woven welcome',description:'Bring 3 woven-cloth bundles to Kuya Amir at the lakeside stall.',goal:3,item:'cloth',npc:'nena',reward:95},{title:'The final gathering',description:'Shoo 5 sprites along the lakeside path, then see Kuya Benji.',goal:5,item:'cleared',npc:'benji',reward:120}]}
   ];
 export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sampaguita',buko:'buko',clay:'clay bundles',rice:'rice bundles',bamboo:'bamboo bundles',wood:'carving wood',cloth:'woven cloth',cleared:'shades'};
   export function stageInfo(s: GameState): Stage{return stages[s.stage||0];}
   export function currentQuest(s: GameState): Quest | undefined{const q=stageInfo(s).tasks[s.quest];return q?.item==='cleared'?{...q,title:['Smoke in the palayan','The crooked road','Wings in the moonlight','Bring back the moon'][s.stage],description:'Dispel '+q.goal+' '+legendFor(s).shade.toLowerCase()+'s, then visit '+stageNpcs(s)[2].name+'.'}:q;}
   export function questAmount(s: GameState, q: Quest | undefined = currentQuest(s)): number{return q?(q.item==='cleared'?Math.max(0,s.cleared-(s.clearStart?.[s.stage]||0)):s[q.item]):0;}
   const buildingCache: Building[][]=[],treeCache:Point[][]=[],homeCache:Point[][]=[];
-  export function stageBuildings(s: Pick<GameState, 'stage'>): Building[]{const i=s.stage||0;return buildingCache[i]??=(buildings.map<Building>((b,j)=>i===0?b:{...b,type:i===1?'bato':i===2?'bale':j===1?'torogan':'pavilion',w:i===1?b.w+12:i===3&&j===1?158:b.w,h:i===1?92:i===2?96:i===3?98:b.h}).map(b=>inRegion(b,i)));}
+  export function stageBuildings(s: Pick<GameState, 'stage'>): Building[]{const i=s.stage||0;return buildingCache[i]??=([...buildings,...(i===0?townBuildings:[])].map<Building>((b,j)=>i===0?b:{...b,type:i===1?'bato':i===2?'bale':j===1?'torogan':'pavilion',w:i===1?b.w+12:i===3&&j===1?158:b.w,h:i===1?92:i===2?96:i===3?98:b.h}).map(b=>inRegion(b,i)));}
   export function stageTrees(s: Pick<GameState, 'stage'>): Point[]{return treeCache[s.stage]??=([... (s.stage===3?trees.filter(t=>t.x!==265&&t.y<451):trees),...wildTreesFor(s.stage)].map(t=>inRegion(t,s.stage)));}
   export function stageNodes(s: GameState): HarvestNode[]{const mappings: Partial<Record<import('./types').Resource, import('./types').Resource>>[] = [{}, {mango:'clay'}, {mango:'rice',flowers:'bamboo',buko:'rice'}, {mango:'wood',flowers:'cloth'}];return nodes.map(n=>({...n,type:mappings[s.stage||0][n.type]||n.type,...(s.stage===3&&n.id===1?{x:248,y:218}:{})})).map(n=>inRegion(n,s.stage));}
   export function stageNpcs(s: GameState): Npc[]{const names=[['Lola Rosa','Aling Nena','Kuya Benji'],['Aling Pilar','Mang Tomas','Kuya Benji'],['Ate Laya','Mang Dado','Kuya Benji'],['Ate Salma','Kuya Amir','Kuya Benji']][s.stage||0];return npcs.map((n,i)=>({...n,name:names[i]})).map(n=>inRegion(n,s.stage));}
@@ -51,7 +51,7 @@ export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sam
     if(typeof index!=='number'||!Number.isInteger(index)||index<0||index>Math.min(3,s.unlocked)||s.paused)return false;
     s.projectiles=[];s.area='field';s.stage=index;s.quest=s.stageProgress[index];s.completed=Array.from({length:s.quest},(_,i)=>i);s.transition=null;s.arrival++;s.player.x=392+regionOrigin(s.stage).x;s.player.y=284+regionOrigin(s.stage).y;s.player.dir='down';s.player.hp=maxHealth(s);s.player.stamina=100;s.player.walking=false;s.player.swing=0;s.player.invincible=2;s.nodes=nodes.map(()=>0);s.spirits=monsterHomes(s).map((h,i)=>({...h,hp:2+s.stage,dead:0,phase:i*2,flash:0}));emit(s,legendFor(s).title+' · Press L for the lantern journal.','arrival');return true;
   }
-  export function create(): GameState{return {version:4,profiles:createProfiles(),armor:'linen',armors:['linen','abaca'],hair:'natural',skin:'natural',hairColor:'ink',worldVersion:1,weapon:'yantok',weapons:['yantok','tirador'],area:'tavern',chests:[0,0,0,0],loreSeen:[false,false,false,false],xp:0,gear:{arnis:0,sandals:0,agimat:0},gearOwned:{arnis:0,sandals:0,agimat:0},stage:0,stageProgress:[0,0,0,0],clearStart:[0,0,0,0],unlocked:0,arrival:0,transition:null,character:'tala',name:'Tala',outfit:'terracotta',hat:'salakot',coins:0,mango:0,flowers:0,buko:0,beads:0,clay:0,rice:0,bamboo:0,wood:0,cloth:0,cleared:0,quest:0,completed:[],projectiles:[],player:{...TAVERN.spawn,shot:0,shotCooldown:0,dir:'down',hp:5,stamina:100,walking:false,walkTime:0,swing:0,cooldown:0,dash:0,dashCooldown:0,invincible:0},nodes:nodes.map(()=>0),spirits:spiritHomes.map((h,i)=>({...h,hp:2,dead:0,phase:i*2,flash:0})),time:0,paused:false,compact:false,eventId:0,events:[],savedAt:Date.now()};}
+  export function create(): GameState{return {version:4,profiles:createProfiles(),armor:'linen',armors:['linen','abaca'],hair:'natural',skin:'natural',hairColor:'ink',worldVersion:2,weapon:'yantok',weapons:['yantok','tirador'],area:'tavern',chests:[0,0,0,0],loreSeen:[false,false,false,false],xp:0,gear:{arnis:0,sandals:0,agimat:0},gearOwned:{arnis:0,sandals:0,agimat:0},stage:0,stageProgress:[0,0,0,0],clearStart:[0,0,0,0],unlocked:0,arrival:0,transition:null,character:'tala',name:'Tala',outfit:'terracotta',hat:'salakot',coins:0,mango:0,flowers:0,buko:0,beads:0,clay:0,rice:0,bamboo:0,wood:0,cloth:0,cleared:0,quest:0,completed:[],projectiles:[],player:{...TAVERN.spawn,shot:0,shotCooldown:0,dir:'down',hp:5,stamina:100,walking:false,walkTime:0,swing:0,cooldown:0,dash:0,dashCooldown:0,invincible:0},nodes:nodes.map(()=>0),spirits:spiritHomes.map((h,i)=>({...h,hp:2,dead:0,phase:i*2,flash:0})),time:0,paused:false,compact:false,eventId:0,events:[],savedAt:Date.now()};}
   function emit(s: GameState, text: string, type: EventType = 'notice', x = s.player.x, y = s.player.y): void{s.eventId++;s.events.push({id:s.eventId,text,type,x,y});s.events=s.events.slice(-20);}
   export function bounds(s: Pick<GameState,'area'>) {return s.area==='tavern'?TAVERN:WORLD;}
   export function features(s: GameState): WorldFeature[] {
@@ -61,7 +61,7 @@ export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sam
       {id:'bed',name:'Rest',kind:'rest',x:654,y:251}
     ];
     return [
-      ...(s.stage===0?[{id:'inn',name:'Enter tavern',kind:'door' as const,...TAVERN.entrance}]:[]),
+      ...(s.stage===0?[{id:'plaza',name:'Town plaza · Pahinga',kind:'rest' as const,x:735,y:800},{id:'inn',name:'Enter tavern',kind:'door' as const,...TAVERN.entrance}]:[]),
       ...chests.filter((_,i)=>!(s.chests[s.stage]&(1<<i))).map(p=>({...p,id:'chest-'+chests.indexOf(p),name:'Open chest',kind:'chest' as const,chest:chests.indexOf(p)})).map(f=>inRegion(f,s.stage)),
       ...camps.map((p,i)=>({...p,id:'camp-'+i,name:'Rest',kind:'rest' as const})).map(f=>inRegion(f,s.stage)),
       ...passages.filter(p=>p.a===s.stage||p.b===s.stage).map((p,i)=>{const destination=p.a===s.stage?p.b:p.a;const horizontal=p.x%REGION.width===0;return {id:'passage-'+i,name:destination<=s.unlocked?'Enter '+stages[destination].name:'🔒 '+s.cleared+'/'+regionLocks[destination]+' shades',kind:'gate' as const,destination,x:p.x+(horizontal?(s.stage===p.a?-32:32):0),y:p.y+(!horizontal?(s.stage===p.a?-32:32):0)};})
@@ -73,6 +73,7 @@ export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sam
     const stage=regionAt(x,y),o=regionOrigin(stage),lx=x-o.x,ly=y-o.y;
     if(stage>(s.unlocked??s.stage))return true;
     if(ly>456&&ly<(stage===3&&lx<960?600:505)&&!((lx>425&&lx<490)||(lx>1340&&lx<1400)))return true;
+    if(stage===0&&Math.hypot(lx-735,ly-750)<26)return true;
     if(stage===0&&Math.abs(lx-392)<100&&ly>623&&ly<696)return true;
     if(stageBuildings({stage}).some(b=>x>b.x-b.w/2-5&&x<b.x+b.w/2+5&&y>b.y-20&&y<b.y+b.h*.48))return true;
     if(stageTrees({stage}).some(t=>Math.abs(x-t.x)<12&&Math.abs(y-t.y)<9))return true;
@@ -193,9 +194,9 @@ export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sam
       if(Math.hypot(p.x-e.x,p.y-e.y)>800)return;
       if(!s.loreSeen[s.stage]&&Math.hypot(p.x-e.x,p.y-e.y)<105){s.loreSeen[s.stage]=true;emit(s,'Encounter: '+legendFor(s).name+' · '+legendFor(s).warning,'lore');}
       const h=homes[i],pace=[.55,1.15,.75,.85][s.stage],tx=h.x+Math.sin(e.phase*pace)*[24,38,28,32][s.stage],ty=h.y+Math.cos(e.phase*(pace+.2))*16;
-      const distance=Math.hypot(p.x-e.x,p.y-e.y),alert=distance<115&&distance>12,rate=alert?(25+s.stage*5)*dt/(distance||1):Math.min(1,dt*1.5),nx=e.x+((alert?p.x:tx)-e.x)*rate,ny=e.y+((alert?p.y:ty)-e.y)*rate;
-      if(!blocked(nx,e.y,s))e.x=nx;if(!blocked(e.x,ny,s))e.y=ny;
-      if(Math.hypot(p.x-e.x,p.y-e.y)<15&&p.invincible<=0&&p.dash<=0){p.hp--;p.invincible=1.8;emit(s,'Watch out! '+legendFor(s).shade+' nearby.','hurt');if(p.hp<=0){p.hp=maxHealth(s);setBiome(s,0);s.area='tavern';Object.assign(p,TAVERN.spawn,{walking:false,dash:0,swing:0});s.arrival++;emit(s,'♥ Recovered at the tavern.');}}
+      const distance=Math.hypot(p.x-e.x,p.y-e.y),alert=distance<115&&distance>12&&!(s.stage===0&&inTown(p)),rate=alert?(25+s.stage*5)*dt/(distance||1):Math.min(1,dt*1.5),nx=e.x+((alert?p.x:tx)-e.x)*rate,ny=e.y+((alert?p.y:ty)-e.y)*rate;
+      if(!blocked(nx,e.y,s)&&!(s.stage===0&&inTown({x:nx,y:e.y})))e.x=nx;if(!blocked(e.x,ny,s)&&!(s.stage===0&&inTown({x:e.x,y:ny})))e.y=ny;
+      if(!(s.stage===0&&inTown(p))&&Math.hypot(p.x-e.x,p.y-e.y)<15&&p.invincible<=0&&p.dash<=0){p.hp--;p.invincible=1.8;emit(s,'Watch out! '+legendFor(s).shade+' nearby.','hurt');if(p.hp<=0){p.hp=maxHealth(s);setBiome(s,0);s.area='tavern';Object.assign(p,TAVERN.spawn,{walking:false,dash:0,swing:0});s.arrival++;emit(s,'♥ Recovered at the tavern.');}}
     });return s;
   }
   export function restore(raw: unknown): GameState {
@@ -239,14 +240,18 @@ export const itemLabels: Record<QuestItem, string> ={mango:'mangga',flowers:'sam
   s.transition=null;
   s.weapons=Array.isArray(raw.weapons)?[...new Set(['yantok','tirador',...raw.weapons.filter((id):id is string=>typeof id==='string'&&isKey(weapons,id))])]:['yantok','tirador'];
   s.weapon=typeof raw.weapon==='string'&&s.weapons.includes(raw.weapon)?raw.weapon:'yantok';
-  const p = isRecord(raw.player)&&s.area==='field'&&raw.worldVersion!==1&&typeof raw.player.x==='number'&&typeof raw.player.y==='number'?inRegion({...raw.player,x:raw.player.x,y:raw.player.y},s.stage):raw.player;
+  let p:unknown=raw.player;
+  if(isRecord(raw.player)&&s.area==='field'&&typeof raw.player.x==='number'&&typeof raw.player.y==='number'){
+    if(raw.worldVersion===1){const oldOrigin={x:s.stage%2*3072,y:Math.floor(s.stage/2)*2304};p=inRegion(compactPoint({...raw.player,x:raw.player.x-oldOrigin.x,y:raw.player.y-oldOrigin.y}),s.stage);}
+    else if(raw.worldVersion!==2)p=inRegion(compactPoint({...raw.player,x:raw.player.x,y:raw.player.y}),s.stage);
+  }
   if(s.area==='field'){s.player.x=392+regionOrigin(s.stage).x;s.player.y=284+regionOrigin(s.stage).y;s.spirits=monsterHomes(s).map((h,i)=>({...h,hp:2+s.stage,dead:0,phase:i*2,flash:0}));}
   if (isRecord(p) && typeof p.x === 'number' && Number.isFinite(p.x) && typeof p.y === 'number' && Number.isFinite(p.y) && (s.area==='tavern'||regionAt(p.x,p.y)===s.stage) && !blocked(p.x,p.y,s)) {
     s.player.x=p.x; s.player.y=p.y;
     if (p.dir === 'up' || p.dir === 'down' || p.dir === 'left' || p.dir === 'right') s.player.dir = p.dir;
     s.player.hp = typeof p.hp === 'number' && Number.isFinite(p.hp) ? Math.max(1,Math.min(maxHealth(s),p.hp)) : maxHealth(s);
   }
-  if(raw.worldVersion===1&&isRecord(p)&&typeof p.x==='number'&&Number.isFinite(p.x)&&typeof p.y==='number'&&Number.isFinite(p.y)&&s.area==='field'&&regionAt(p.x,p.y)===s.stage&&p.x>20&&p.y>86&&p.x<WORLD.width-20&&p.y<WORLD.height-20&&blocked(p.x,p.y,s)){
+  if((raw.worldVersion===1||raw.worldVersion===2)&&isRecord(p)&&typeof p.x==='number'&&Number.isFinite(p.x)&&typeof p.y==='number'&&Number.isFinite(p.y)&&s.area==='field'&&regionAt(p.x,p.y)===s.stage&&p.x>20&&p.y>86&&p.x<WORLD.width-20&&p.y<WORLD.height-20&&blocked(p.x,p.y,s)){
     let found=false;for(let radius=8;radius<=80&&!found;radius+=8)for(let i=0;i<12;i++){const x=p.x+Math.cos(i*Math.PI/6)*radius,y=p.y+Math.sin(i*Math.PI/6)*radius;if(!blocked(x,y,s)&&regionAt(x,y)===s.stage){s.player.x=x;s.player.y=y;found=true;break;}}
   }
   const timers: unknown[] = Array.isArray(raw.nodes) ? raw.nodes : [];

@@ -1,3 +1,4 @@
+import { WORLD, TAVERN, regionAt } from './world';
 import type { CharacterId, CharacterProfile, Direction, GameState } from './types';
 import { isRecord, isKey } from './types';
 import { restoreProfile } from './profiles';
@@ -10,8 +11,8 @@ export function guestName(value:unknown):string{return typeof value==='string'?v
 export function normalizePose(value:unknown):GuestPose|null{
  if(!isRecord(value)||!['tala','isko','amihan'].includes(String(value.character))||!['field','tavern'].includes(String(value.area)))return null;
  const character=value.character as CharacterId,area=value.area as 'field'|'tavern',look=restoreProfile(value.look,character);look.name=guestName(value.name);
- const x=number(value.x,0,area==='tavern'?768:6144),y=number(value.y,0,area==='tavern'?512:4608);
- return {name:look.name,character,look,area,stage:area==='tavern'?0:(x>=3072?1:0)+(y>=2304?2:0),x,y,dir:isKey({up:1,down:1,left:1,right:1},value.dir)?value.dir:'down',walking:value.walking===true,walkTime:number(value.walkTime,0,1e8),swing:number(value.swing,0,.32),shot:number(value.shot,0,.22),dash:number(value.dash,0,.18)};
+ const x=number(value.x,0,area==='tavern'?TAVERN.width:WORLD.width),y=number(value.y,0,area==='tavern'?TAVERN.height:WORLD.height);
+ return {name:look.name,character,look,area,stage:area==='tavern'?0:regionAt(x,y),x,y,dir:isKey({up:1,down:1,left:1,right:1},value.dir)?value.dir:'down',walking:value.walking===true,walkTime:number(value.walkTime,0,1e8),swing:number(value.swing,0,.32),shot:number(value.shot,0,.22),dash:number(value.dash,0,.18)};
 }
 export function toGuestPose(s:GameState,name:string):GuestPose{
  const look:CharacterProfile={name,outfit:s.outfit,hat:s.hat,hair:s.hair,hairColor:s.hairColor,skin:s.skin,armor:s.armor,armors:[s.armor],weapon:s.weapon,weapons:[s.weapon],gear:{...s.gear},gearOwned:{...s.gear},xp:s.xp,hp:s.player.hp,stamina:100};

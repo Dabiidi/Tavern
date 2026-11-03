@@ -21,6 +21,7 @@ export function drawMinimap(state:GameState,camera:Point,width:number,height:num
     ink.fillStyle='#a9b88244';for(const tree of core.stageTrees(state)){const p=position(tree);ink.fillRect(p.x,p.y,2,2);}
     ink.fillStyle='#729f9a';ink.fillRect(0,458*sy,256,47*sy);if(state.stage===3)ink.fillRect(0,458*sy,960*sx,142*sy);
     ink.strokeStyle='#c2af78';ink.lineWidth=2;ink.beginPath();ink.moveTo(455*sx,280*sy);ink.lineTo(455*sx,192);ink.moveTo(0,735*sy);ink.lineTo(256,735*sy);ink.moveTo(1370*sx,130*sy);ink.lineTo(1370*sx,192);ink.moveTo(455*sx,1000*sy);ink.lineTo(256,1000*sy);ink.stroke();
+    if(state.stage===0){ink.fillStyle='#d8cbac';ink.fillRect(core.TOWN.x*sx,core.TOWN.y*sy,core.TOWN.width*sx,core.TOWN.height*sy);}
     for(const building of core.stageBuildings(state)){const p=position(building);ink.fillStyle='#d6c59a';ink.fillRect(p.x-3,p.y-2,6,4);}
     for(const feature of core.features(state)){
       const p=position(feature);
@@ -34,7 +35,7 @@ export function drawMinimap(state:GameState,camera:Point,width:number,height:num
     for(const npc of core.stageNpcs(state)){const p=position(npc);ink.fillStyle='#f2d594';ink.beginPath();ink.arc(p.x,p.y,2,0,Math.PI*2);ink.fill();}
     if(state.stage===0){const p=position(core.TAVERN.entrance);ink.fillStyle='#ffe4a0';ink.fillRect(p.x-3,p.y-2,6,5);ink.beginPath();ink.moveTo(p.x-5,p.y-2);ink.lineTo(p.x,p.y-7);ink.lineTo(p.x+5,p.y-2);ink.fill();}
     }
-    element('minimap-place').textContent=outside?core.stageInfo(state).name:'Bahay Pahinga';
+    element('minimap-place').textContent=outside?core.islandNames[state.stage]+' · '+core.stageInfo(state).name:'Bahay Pahinga';
     canvas.setAttribute('aria-label',outside?'Map of '+core.stageInfo(state).name+'. White arrow: you. Gold: villagers and treasure. Green: rest camps. Locks: closed paths.':'Map of Bahay Pahinga. White arrow: you. Gold: companions. Green: exit.');
   }
   map.clearRect(0,0,256,192);map.drawImage(terrain,0,0);

@@ -28,7 +28,7 @@ export interface CharacterProfile {
 export interface GameState extends Record<Resource, number> {
   armor:ArmorId; armors:ArmorId[]; hair:HairStyle; skin:SkinTone; hairColor:HairColor;
   profiles:Record<CharacterId,CharacterProfile>;
-  worldVersion: 1; weapon: string; weapons: string[];
+  worldVersion: 2; weapon: string; weapons: string[];
   area: 'tavern' | 'field'; chests: number[];
   version: 4; stage: number; stageProgress: number[]; clearStart: number[]; unlocked: number; arrival: number;
   transition: { next: number; remaining: number } | null;

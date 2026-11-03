@@ -60,6 +60,8 @@ export function setTarget(x:number,y:number){route=findPath(state.player,{x,y},(
     const k=bindings[event.key];if(k){event.preventDefault();keys.add(k);target=null;route=[];}
     if(!event.repeat){if(event.code==='Space'){event.preventDefault();keys.add('attack');action('swing');}if(event.code==='KeyR'){event.preventDefault();keys.add('shoot');action('shoot');}if(event.code==='KeyE'){event.preventDefault();action('interact');}if(event.code==='KeyQ'){event.preventDefault();action('dash');}if(event.code==='Escape')action('pause');}
   });
+  $('chat-input').addEventListener('focus',()=>{keys.clear();target=null;route=[];state.player.walking=false;});
+  $('chat-input').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();$('room-chat').hidden=true;$('game').focus();}});
   window.addEventListener('keyup',event=>{if(bindings[event.key])keys.delete(bindings[event.key]);if(event.code==='Space')keys.delete('attack');if(event.code==='KeyR')keys.delete('shoot');});
   function clear(){keys.clear();target=null;route=[];state.player.walking=false;persist();}
   window.addEventListener('blur',clear);window.addEventListener('pagehide',clear);
