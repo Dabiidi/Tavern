@@ -2,7 +2,7 @@
 "use strict";
 (() => {
   // src/worker/sw.ts
-  var CACHE = "baryo-guests-v4-16";
+  var CACHE = "baryo-guests-v4-17";
   var FILES = ["./", "./index.html", "./style.css", "./game.js", "./icon.svg", "./icon-192.png", "./icon-512.png", "./manifest.webmanifest"];
   self.addEventListener("install", (event) => {
     event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)).then(() => self.skipWaiting()));

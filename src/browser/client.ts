@@ -1,3 +1,4 @@
+import { initMusic } from './music';
 import { initMultiplayer, isMultiplayerActive } from './multiplayer';
 import { findPath } from '../shared/navigation';
 import * as core from '../shared/core';
@@ -122,4 +123,4 @@ export function setTarget(x:number,y:number){route=findPath(state.player,{x,y},(
       if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('notice').classList.remove('visible');}saveClock+=dt;if(saveClock>4){saveClock=0;persist();}update();
     }requestAnimationFrame(frame);
   }
-  update();initMultiplayer(getState,!vscode&&/^https?:$/.test(location.protocol));requestAnimationFrame(frame);
+  update();initMusic(getState);initMultiplayer(getState,!vscode&&/^https?:$/.test(location.protocol));requestAnimationFrame(frame);

@@ -1,32 +1,6 @@
 // Generated from TypeScript. Run npm run build to regenerate.
 "use strict";
 (() => {
-  // src/shared/chat.ts
-  var SpeechBubbles = class {
-    bubbles = /* @__PURE__ */ new Map();
-    seen = /* @__PURE__ */ new Set();
-    say(guestId2, text, now) {
-      this.bubbles.set(guestId2, { text, until: now + 5500 });
-    }
-    receive(messages, now, serverNow) {
-      for (const m of messages) {
-        if (this.seen.has(m.id)) continue;
-        this.seen.add(m.id);
-        if (serverNow - m.createdAt >= 0 && serverNow - m.createdAt < 5500) this.say(m.guestId, m.text, now);
-      }
-      if (this.seen.size > 256) this.seen = new Set([...this.seen].slice(-128));
-      for (const [id, b] of this.bubbles) if (b.until <= now) this.bubbles.delete(id);
-    }
-    get(id, now) {
-      const b = this.bubbles.get(id);
-      return b && b.until > now ? b.text : "";
-    }
-    clear() {
-      this.bubbles.clear();
-      this.seen.clear();
-    }
-  };
-
   // src/shared/world.ts
   var REGION = { width: 1920, height: 1440 };
   var WORLD = { width: 3840, height: 2880 };
@@ -76,6 +50,214 @@
     }
     return forests[stage] = result;
   }
+
+  // src/browser/music.ts
+  var chords = [[50, 57, 61, 66], [47, 54, 57, 62], [43, 50, 54, 59], [45, 52, 59, 61]];
+  var melody = [
+    [78, 0, 0, 76, 0, 73, 0, 0],
+    [0, 74, 0, 0, 73, 0, 69, 0],
+    [71, 0, 0, 74, 0, 78, 0, 0],
+    [0, 76, 0, 73, 0, 71, 0, 0],
+    [0, 73, 0, 0, 78, 0, 76, 0],
+    [74, 0, 0, 73, 0, 69, 0, 0],
+    [0, 71, 0, 74, 0, 0, 78, 0],
+    [76, 0, 73, 0, 71, 0, 0, 0]
+  ];
+  function initMusic(readState) {
+    const button = document.getElementById("music-toggle");
+    const slider = document.getElementById("music-volume");
+    let enabled2 = true, volume = 0.3, context, master, noise;
+    let next = 0, step2 = 0, timer2 = 0, starting = false;
+    try {
+      enabled2 = localStorage.getItem("baryo-music") !== "off";
+      const saved = Number(localStorage.getItem("baryo-volume") ?? 0.3);
+      if (Number.isFinite(saved)) volume = Math.max(0, Math.min(0.7, saved));
+    } catch {
+    }
+    slider.value = String(Math.round(volume * 100));
+    const update2 = () => {
+      button.textContent = enabled2 ? "\u266B" : "\u266B\u0338";
+      button.setAttribute("aria-pressed", String(enabled2));
+      button.setAttribute("aria-label", enabled2 ? "Mute town music" : "Play town music");
+      button.title = enabled2 ? "Hapon sa Plaza \xB7 music on" : "Town music off";
+    };
+    const save = () => {
+      try {
+        localStorage.setItem("baryo-music", enabled2 ? "on" : "off");
+        localStorage.setItem("baryo-volume", String(volume));
+      } catch {
+      }
+    };
+    function tone(note, time, length, gain, type = "sine") {
+      const c = context, osc = c.createOscillator(), amp = c.createGain(), filter = c.createBiquadFilter();
+      osc.type = type;
+      osc.frequency.value = 440 * Math.pow(2, (note - 69) / 12);
+      osc.detune.value = Math.sin(step2 * 0.7 + note) * 3;
+      filter.type = "lowpass";
+      filter.frequency.value = type === "triangle" ? 900 : 2400;
+      amp.gain.setValueAtTime(1e-4, time);
+      amp.gain.exponentialRampToValueAtTime(gain, time + 0.025);
+      amp.gain.exponentialRampToValueAtTime(1e-4, time + length);
+      osc.connect(filter);
+      filter.connect(amp);
+      amp.connect(master);
+      osc.start(time);
+      osc.stop(time + length + 0.05);
+      osc.onended = () => {
+        osc.disconnect();
+        filter.disconnect();
+        amp.disconnect();
+      };
+    }
+    function drum(time, hat) {
+      const c = context, amp = c.createGain();
+      amp.connect(master);
+      if (hat) {
+        const source = c.createBufferSource(), filter = c.createBiquadFilter();
+        source.buffer = noise;
+        filter.type = "highpass";
+        filter.frequency.value = 6500;
+        source.connect(filter);
+        filter.connect(amp);
+        amp.gain.setValueAtTime(0.022, time);
+        amp.gain.exponentialRampToValueAtTime(1e-4, time + 0.07);
+        source.start(time);
+        source.stop(time + 0.08);
+        source.onended = () => {
+          source.disconnect();
+          filter.disconnect();
+          amp.disconnect();
+        };
+      } else {
+        const kick = c.createOscillator();
+        kick.frequency.setValueAtTime(110, time);
+        kick.frequency.exponentialRampToValueAtTime(46, time + 0.12);
+        amp.gain.setValueAtTime(0.16, time);
+        amp.gain.exponentialRampToValueAtTime(1e-4, time + 0.22);
+        kick.connect(amp);
+        kick.start(time);
+        kick.stop(time + 0.24);
+        kick.onended = () => {
+          kick.disconnect();
+          amp.disconnect();
+        };
+      }
+    }
+    function schedule2() {
+      const c = context;
+      const state3 = readState(), town = state3.area === "tavern" || state3.stage === 0 && inTown(state3.player), audible = enabled2 && town && !document.hidden && !state3.paused;
+      master.gain.setTargetAtTime(audible ? volume : 0, c.currentTime, 0.35);
+      if (c.state !== "running") return;
+      if (next < c.currentTime - 0.2) {
+        next = c.currentTime + 0.06;
+        step2 = 0;
+      }
+      const eighth = 60 / 72 / 2;
+      while (next < c.currentTime + 0.16) {
+        if (audible) {
+          const bar = Math.floor(step2 / 8) % 8, beat = step2 % 8, chord = chords[bar % 4], time = next + (beat % 2 ? 0.025 : 0);
+          if (beat === 0) {
+            chord.forEach((note2, i) => tone(note2 + 12, time + i * 0.018, eighth * 7.3, 0.035, "triangle"));
+            tone(chord[0] - 12, time, eighth * 3.2, 0.095);
+          }
+          if (beat === 4) tone(chord[0] - 12, time, eighth * 2.7, 0.065);
+          const note = melody[bar][beat];
+          if (note) tone(note, time, eighth * 1.8, 0.047);
+          if (beat === 0 || beat === 4) drum(time, false);
+          if (beat % 2 === 1) drum(time, true);
+          if (beat === 2 || beat === 6) {
+            tone(50, time, 0.06, 0.035, "triangle");
+            drum(time + 8e-3, true);
+          }
+        }
+        next += eighth;
+        step2 = (step2 + 1) % 128;
+      }
+    }
+    async function start() {
+      if (!enabled2 || starting) return;
+      starting = true;
+      try {
+        if (!context) {
+          context = new AudioContext();
+          master = context.createGain();
+          master.gain.value = 0;
+          const compressor = context.createDynamicsCompressor();
+          compressor.threshold.value = -18;
+          compressor.ratio.value = 3;
+          master.connect(compressor);
+          compressor.connect(context.destination);
+          noise = context.createBuffer(1, Math.ceil(context.sampleRate * 0.12), context.sampleRate);
+          const data = noise.getChannelData(0);
+          let seed2 = 43;
+          for (let i = 0; i < data.length; i++) {
+            seed2 = Math.imul(seed2, 1664525) + 1013904223 >>> 0;
+            data[i] = seed2 / 4294967295 * 2 - 1;
+          }
+          next = context.currentTime + 0.08;
+          timer2 = window.setInterval(schedule2, 80);
+        }
+        if (context.state === "suspended") await context.resume();
+        schedule2();
+        button.dataset.audioState = context.state;
+      } catch {
+        button.title = "Click to start town music";
+      } finally {
+        starting = false;
+      }
+    }
+    button.addEventListener("click", () => {
+      enabled2 = !enabled2;
+      save();
+      update2();
+      if (enabled2) void start();
+      else if (master && context) master.gain.setTargetAtTime(0, context.currentTime, 0.15);
+    });
+    slider.addEventListener("input", () => {
+      volume = Number(slider.value) / 100;
+      save();
+      if (enabled2) void start();
+    });
+    const unlock = () => {
+      if (enabled2) void start();
+    };
+    document.addEventListener("pointerdown", unlock, { once: true });
+    document.addEventListener("keydown", unlock, { once: true });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && context && master) master.gain.setTargetAtTime(0, context.currentTime, 0.1);
+    });
+    window.addEventListener("pagehide", () => {
+      clearInterval(timer2);
+      void context?.close();
+    }, { once: true });
+    update2();
+  }
+
+  // src/shared/chat.ts
+  var SpeechBubbles = class {
+    bubbles = /* @__PURE__ */ new Map();
+    seen = /* @__PURE__ */ new Set();
+    say(guestId2, text, now) {
+      this.bubbles.set(guestId2, { text, until: now + 5500 });
+    }
+    receive(messages, now, serverNow) {
+      for (const m of messages) {
+        if (this.seen.has(m.id)) continue;
+        this.seen.add(m.id);
+        if (serverNow - m.createdAt >= 0 && serverNow - m.createdAt < 5500) this.say(m.guestId, m.text, now);
+      }
+      if (this.seen.size > 256) this.seen = new Set([...this.seen].slice(-128));
+      for (const [id, b] of this.bubbles) if (b.until <= now) this.bubbles.delete(id);
+    }
+    get(id, now) {
+      const b = this.bubbles.get(id);
+      return b && b.until > now ? b.text : "";
+    }
+    clear() {
+      this.bubbles.clear();
+      this.seen.clear();
+    }
+  };
 
   // src/shared/types.ts
   function isRecord(value) {
@@ -1732,6 +1914,7 @@
     requestAnimationFrame(frame);
   }
   update();
+  initMusic(getState2);
   initMultiplayer(getState2, !vscode && /^https?:$/.test(location.protocol));
   requestAnimationFrame(frame);
 

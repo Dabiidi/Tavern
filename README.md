@@ -158,3 +158,7 @@ Local preview uses the local guest server. The online service uses D1 for presen
 Bayan Maligaya has a safe plaza east of the tavern with a fountain, benches, lanterns, shops and townsfolk. Rest at the heart marker. The compact regions retain Luzon (barrio and Cordillera), Visayas (heritage town), and Mindanao (lakeside) settings. Version-1 large-world coordinates migrate once, preserving inventory and progress.
 
 Guest chat appears above the speaking character for 5.5 seconds. Sending immediately returns keyboard focus to the game; Escape closes chat. Incoming historical chat stays in the log without replaying old speech bubbles. Movement presence polls every 300 ms plus network overhead, with a 250 ms minimum pause between requests and interpolation between updates.
+
+## Original town music
+
+**Hapon sa Plaza** is a gentle, original 72 BPM synthesized lo-fi composition, created for this game without third-party recordings, melodies or samples. Its composition and score in `src/browser/music.ts` are dedicated to the public domain under CC0-1.0 (https://creativecommons.org/publicdomain/zero/1.0/). It plays in the tavern and safe town area after a click or key press, fades in the wilderness, and mutes in hidden tabs. The ♫ button toggles music; the ? controls panel has a volume slider. Music preferences persist locally.
