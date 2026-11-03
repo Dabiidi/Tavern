@@ -1919,6 +1919,7 @@
   requestAnimationFrame(frame);
 
   // src/browser/sprites.ts
+  var WORLD_CHARACTER_SCALE = 1.05;
   var TILE_W = 80;
   var TILE_H = 64;
   var FRAMES = 8;
@@ -2623,8 +2624,8 @@
   }
   function companion(c) {
     const selected = state2.character === c.id, profile = characterProfile(state2, c.id);
-    oval(c.x, c.y + 4, 24, 8, selected ? "#e5c77788" : "#382d2c55");
-    profileSprite(ctx, c.x, c.y, c.id, profile, 1.3);
+    oval(c.x, c.y + 3, 10, 3, selected ? "#e5c77788" : "#382d2c55");
+    profileSprite(ctx, c.x, c.y, c.id, profile, WORLD_CHARACTER_SCALE);
     ctx.font = "bold 9px monospace";
     ctx.textAlign = "center";
     ctx.fillStyle = selected ? "#ffe3a0" : "#f2dfb4";
@@ -2634,9 +2635,9 @@
     ctx.fillText(c.role.split(" \xB7 ")[0] + " \xB7 Lv " + Math.min(10, 1 + Math.floor(profile.xp / 100)), c.x, c.y + 38);
   }
   function remoteGuest(peer) {
-    oval(peer.x, peer.y + 3, 12, 4, "#82c9bf55");
+    oval(peer.x, peer.y + 3, 10, 3, "#82c9bf55");
     const pose = peer.shot > 0 ? "shoot" : peer.swing > 0 ? "attack" : peer.dash > 0 ? "dash" : peer.walking ? "walk" : "idle";
-    profileSprite(ctx, peer.x, peer.y, peer.character, peer.look, 1.05, peer.dir, pose, peer.walking ? peer.walkTime * 12 : clock * 4.5);
+    profileSprite(ctx, peer.x, peer.y, peer.character, peer.look, WORLD_CHARACTER_SCALE, peer.dir, pose, peer.walking ? peer.walkTime * 12 : clock * 4.5);
     ctx.textAlign = "center";
     ctx.font = "7px monospace";
     const label = peer.name + " \xB7 " + characters[peer.character].name;
@@ -3220,8 +3221,8 @@
     paintSprite(target2, x, y, { character: who, hat, shirt, skin: tone, hair: active ? state2.hair : "natural", hairColor: active ? state2.hairColor : "ink", armor: active ? state2.armor : "linen", weapon: pose === "shoot" ? weaponInfo(state2.weapon).kind === "slingshot" ? state2.weapon : state2.weapons.includes("sunshot") ? "sunshot" : "tirador" : state2.weapon, armed: active, sandals: active ? state2.gear.sandals : 0, charm: active ? state2.gear.agimat : 0, wrap: active ? state2.gear.arnis : 0 }, dir, pose, phase, scale);
   }
   function npc(n) {
-    oval(n.x, n.y + 2, 9, 3, "#4b643c44");
-    person(ctx, n.x, n.y + Math.sin(clock * 2 + n.x) * 0.25, "isko", false, Math.sin(clock * 0.35 + n.x) > 0.92 ? "left" : "down", "none", n.shirt, 1);
+    oval(n.x, n.y + 3, 10, 3, "#4b643c44");
+    person(ctx, n.x, n.y + Math.sin(clock * 2 + n.x) * 0.25, "isko", false, Math.sin(clock * 0.35 + n.x) > 0.92 ? "left" : "down", "none", n.shirt, WORLD_CHARACTER_SCALE);
     if (n.id === "lola") {
       rect(n.x - 8, n.y - 42, 17, 6, "#c2b79a");
       rect(n.x + 9, n.y - 40, 5, 5, "#ded4b5");
@@ -3463,8 +3464,8 @@
       for (let i = 0; i < 3; i++) {
         const x = 620 + i * 100 + Math.sin(clock * 0.35 + i) * 8, y = 878 + Math.cos(clock * 0.4 + i) * 3;
         objects.push({ y, draw: () => {
-          oval(x, y + 3, 9, 3, "#526c3f33");
-          profileSprite(ctx, x, y, ["tala", "isko", "amihan"][i], characterProfile(state2, ["tala", "isko", "amihan"][i]), 0.75, "down", "idle", clock * 3 + i);
+          oval(x, y + 3, 10, 3, "#526c3f33");
+          profileSprite(ctx, x, y, ["tala", "isko", "amihan"][i], characterProfile(state2, ["tala", "isko", "amihan"][i]), WORLD_CHARACTER_SCALE, "down", "idle", clock * 3 + i);
         } });
       }
     }
@@ -3474,7 +3475,7 @@
     objects.push({ y: p.y, draw: () => {
       oval(p.x, p.y + 3, 10, 3, "#3f633d55");
       if (p.invincible > 0 && Math.floor(clock * 12) % 2 === 0) ctx.globalAlpha = 0.5;
-      person(ctx, p.x, p.y, state2.character, p.walking, p.dir, state2.hat, colors[state2.outfit], state2.area === "tavern" ? 1.3 : 1.05, true);
+      person(ctx, p.x, p.y, state2.character, p.walking, p.dir, state2.hat, colors[state2.outfit], WORLD_CHARACTER_SCALE, true);
       ctx.globalAlpha = 1;
       if (state2.area === "tavern") {
         ctx.font = "bold 9px monospace";

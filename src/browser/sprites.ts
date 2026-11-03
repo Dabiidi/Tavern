@@ -3,6 +3,8 @@ import type { ArmorId, HairStyle, HairColor } from '../shared/appearance';
 import { hairColors } from '../shared/appearance';
 import { weaponInfo } from '../shared/weapons';
 
+// Every character drawn in the world uses this scale; UI previews can zoom in.
+export const WORLD_CHARACTER_SCALE=1.05;
 export type Pose='idle'|'walk'|'attack'|'shoot'|'dash';
 export interface SpriteLook {character:CharacterId;hat:Hat;shirt:string;skin:string;hair:HairStyle;hairColor:HairColor;armor:ArmorId;weapon:string;armed:boolean;sandals:number;charm:number;wrap:number}
 const TILE_W=80,TILE_H=64,FRAMES=8;
